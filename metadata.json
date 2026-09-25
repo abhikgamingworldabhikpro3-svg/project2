@@ -1,0 +1,8 @@
+{
+  "name": "TutorFlow",
+  "description": "Multi-teacher tuition management platform for classes, attendance, assignments, fees, study materials, and reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

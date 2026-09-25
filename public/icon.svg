@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="tf-icon-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="25%" stop-color="#3730A3" />
+      <stop offset="60%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+
+    <!-- Cap Surface Gradient -->
+    <linearGradient id="tf-icon-cap" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E0E7FF" />
+    </linearGradient>
+
+    <!-- Dynamic Flow Wave Gradient -->
+    <linearGradient id="tf-icon-wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#A5B4FC" />
+    </linearGradient>
+
+    <!-- Golden Tassel Gradient -->
+    <linearGradient id="tf-icon-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Ambient Mesh Highlight -->
+    <radialGradient id="tf-icon-mesh" cx="25%" cy="20%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+
+    <filter id="tf-icon-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Smooth Continuous Corner Radius -->
+  <rect width="512" height="512" rx="128" fill="url(#tf-icon-bg)" />
+  <rect width="512" height="512" rx="128" fill="url(#tf-icon-mesh)" />
+  
+  <!-- Subtle Internal Hairline Highlight -->
+  <rect x="8" y="8" width="496" height="496" rx="120" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="6" />
+
+  <!-- Logo Silhouette -->
+  <g filter="url(#tf-icon-shadow)">
+    <!-- 1. The Bold Modern Graduation Cap (Top Diamond) -->
+    <polygon points="256,104 416,184 256,264 96,184" fill="url(#tf-icon-cap)" />
+
+    <!-- 2. Cap Under-Bezel & Skull-Cap Arch -->
+    <path d="M 160,220 L 256,268 L 352,220 L 352,256 C 352,304 309,332 256,332 C 203,332 160,304 160,256 Z" fill="#C7D2FE" />
+
+    <!-- 3. Tassel Ribbon & Gleaming Gold Dot -->
+    <path d="M 384,196 C 404,236 416,272 404,312" fill="none" stroke="url(#tf-icon-gold)" stroke-width="20" stroke-linecap="round" />
+    <circle cx="404" cy="324" r="18" fill="url(#tf-icon-gold)" />
+
+    <!-- 4. Dynamic "Flow" Swoosh (Open Book Base) -->
+    <path d="M 112,348 C 176,304 228,328 256,352 C 284,328 336,304 400,348 C 348,396 292,380 256,404 C 220,380 164,396 112,348 Z" fill="url(#tf-icon-wave)" />
+    
+    <!-- 5. Central Dynamic Spark Node -->
+    <circle cx="256" cy="353" r="13" fill="#38BDF8" />
+  </g>
+</svg>

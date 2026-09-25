@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="att-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#EEF2FF" />
+    </linearGradient>
+    <filter id="att-card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1E293B" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="600" height="450" rx="24" fill="url(#att-bg)" />
+
+  <!-- Dotted Grid Texture -->
+  <g opacity="0.15" fill="#4F46E5">
+    <circle cx="40" cy="40" r="2" /><circle cx="80" cy="40" r="2" /><circle cx="120" cy="40" r="2" />
+    <circle cx="40" cy="80" r="2" /><circle cx="80" cy="80" r="2" /><circle cx="120" cy="80" r="2" />
+    <circle cx="40" cy="120" r="2" /><circle cx="80" cy="120" r="2" /><circle cx="120" cy="120" r="2" />
+  </g>
+
+  <!-- Main Floating Register Card -->
+  <g filter="url(#att-card-shadow)" transform="translate(45, 45)">
+    <!-- Card Frame -->
+    <rect width="510" height="360" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+
+    <!-- Card Header -->
+    <rect width="510" height="64" rx="20" fill="#FFFFFF" />
+    <path d="M 0 64 L 510 64" stroke="#F1F5F9" stroke-width="1.5" />
+
+    <!-- Class Badge & Title -->
+    <rect x="24" y="18" width="30" height="30" rx="8" fill="#EEF2FF" />
+    <path d="M 33 33 L 39 39 L 47 27" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <text x="64" y="32" font-family="Plus Jakarta Sans, sans-serif" font-size="14" font-weight="700" fill="#0F172A">Daily Attendance Register</text>
+    <text x="64" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Batch: Grade 10 Advanced Math · Today</text>
+
+    <!-- Percentage Badge (Right) -->
+    <rect x="400" y="16" width="86" height="32" rx="16" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1" />
+    <circle cx="416" cy="32" r="4" fill="#10B981" />
+    <text x="428" y="36" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#065F46">96% Present</text>
+
+    <!-- Student Row 1: Sophia Taylor -->
+    <g transform="translate(24, 82)">
+      <rect width="462" height="52" rx="12" fill="#F8FAFC" />
+      <circle cx="26" cy="26" r="14" fill="#E0E7FF" />
+      <text x="26" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#4338CA" text-anchor="middle">ST</text>
+      <text x="52" y="24" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="600" fill="#1E293B">Sophia Taylor</text>
+      <text x="52" y="38" font-family="JetBrains Mono, monospace" font-size="10" font-weight="500" fill="#64748B">Roll #01 · 98% Overall</text>
+      <!-- Present Status Pill -->
+      <rect x="360" y="14" width="86" height="24" rx="12" fill="#DCFCE7" />
+      <text x="403" y="29.5" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="#15803D" text-anchor="middle">PRESENT</text>
+    </g>
+
+    <!-- Student Row 2: Marcus Chen -->
+    <g transform="translate(24, 144)">
+      <rect width="462" height="52" rx="12" fill="#F8FAFC" />
+      <circle cx="26" cy="26" r="14" fill="#CFFAFE" />
+      <text x="26" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#0891B2" text-anchor="middle">MC</text>
+      <text x="52" y="24" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="600" fill="#1E293B">Marcus Chen</text>
+      <text x="52" y="38" font-family="JetBrains Mono, monospace" font-size="10" font-weight="500" fill="#64748B">Roll #02 · 100% Streak</text>
+      <!-- Present Status Pill -->
+      <rect x="360" y="14" width="86" height="24" rx="12" fill="#DCFCE7" />
+      <text x="403" y="29.5" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="#15803D" text-anchor="middle">PRESENT</text>
+    </g>
+
+    <!-- Student Row 3: Aiden Patel -->
+    <g transform="translate(24, 206)">
+      <rect width="462" height="52" rx="12" fill="#F8FAFC" />
+      <circle cx="26" cy="26" r="14" fill="#FEF3C7" />
+      <text x="26" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#D97706" text-anchor="middle">AP</text>
+      <text x="52" y="24" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="600" fill="#1E293B">Aiden Patel</text>
+      <text x="52" y="38" font-family="JetBrains Mono, monospace" font-size="10" font-weight="500" fill="#64748B">Roll #03 · Excused Absence</text>
+      <!-- Excused Status Pill -->
+      <rect x="360" y="14" width="86" height="24" rx="12" fill="#FEF3C7" />
+      <text x="403" y="29.5" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="#B45309" text-anchor="middle">EXCUSED</text>
+    </g>
+
+    <!-- Student Row 4: Emma Davis -->
+    <g transform="translate(24, 268)">
+      <rect width="462" height="52" rx="12" fill="#F8FAFC" />
+      <circle cx="26" cy="26" r="14" fill="#FCE7F3" />
+      <text x="26" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#DB2777" text-anchor="middle">ED</text>
+      <text x="52" y="24" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="600" fill="#1E293B">Emma Davis</text>
+      <text x="52" y="38" font-family="JetBrains Mono, monospace" font-size="10" font-weight="500" fill="#64748B">Roll #04 · 95% Overall</text>
+      <!-- Present Status Pill -->
+      <rect x="360" y="14" width="86" height="24" rx="12" fill="#DCFCE7" />
+      <text x="403" y="29.5" font-family="Plus Jakarta Sans, sans-serif" font-size="10.5" font-weight="700" fill="#15803D" text-anchor="middle">PRESENT</text>
+    </g>
+
+    <!-- Footer Stats summary -->
+    <g transform="translate(24, 328)">
+      <text x="4" y="14" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="600" fill="#94A3B8">Session Summary: 24 Present · 1 Excused · 0 Unexcused</text>
+    </g>
+  </g>
+</svg>

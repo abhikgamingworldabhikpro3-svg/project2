@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="asg-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#F0F9FF" />
+    </linearGradient>
+    <filter id="asg-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0284C7" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="450" rx="24" fill="url(#asg-bg)" />
+
+  <g filter="url(#asg-shadow)" transform="translate(45, 40)">
+    <rect width="510" height="370" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+
+    <!-- Header -->
+    <g transform="translate(24, 20)">
+      <rect width="32" height="32" rx="8" fill="#E0F2FE" />
+      <path d="M 10 7 L 18 7 L 22 11 L 22 25 L 10 25 Z" fill="none" stroke="#0284C7" stroke-width="2" />
+      <line x1="14" y1="15" x2="18" y2="15" stroke="#0284C7" stroke-width="1.5" />
+      <line x1="14" y1="19" x2="18" y2="19" stroke="#0284C7" stroke-width="1.5" />
+
+      <text x="44" y="16" font-family="Plus Jakarta Sans, sans-serif" font-size="14" font-weight="700" fill="#0F172A">Assignment Review & Grading</text>
+      <text x="44" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Thermodynamics Worksheet #04 · Due Tomorrow</text>
+
+      <rect x="360" y="4" width="100" height="28" rx="14" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1" />
+      <text x="410" y="22" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="700" fill="#15803D" text-anchor="middle">18/20 Graded</text>
+    </g>
+
+    <line x1="24" y1="68" x2="486" y2="68" stroke="#F1F5F9" stroke-width="1.5" />
+
+    <!-- Submission Card 1: Outstanding Grade -->
+    <g transform="translate(24, 84)">
+      <rect width="462" height="74" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="37" r="15" fill="#EEF2FF" />
+      <text x="28" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#4338CA" text-anchor="middle">JD</text>
+      
+      <text x="56" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#1E293B">Jessica Diaz</text>
+      <text x="56" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Submitted on time · 3 attachments reviewed</text>
+
+      <rect x="370" y="20" width="76" height="34" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1" />
+      <text x="408" y="41" font-family="JetBrains Mono, monospace" font-size="14" font-weight="800" fill="#047857" text-anchor="middle">98/100</text>
+    </g>
+
+    <!-- Submission Card 2: Feedback Pending -->
+    <g transform="translate(24, 170)">
+      <rect width="462" height="74" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="37" r="15" fill="#FEF3C7" />
+      <text x="28" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#B45309" text-anchor="middle">BL</text>
+      
+      <text x="56" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#1E293B">Brandon Lee</text>
+      <text x="56" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Submitted 2 hours ago · Awaiting teacher review</text>
+
+      <rect x="360" y="22" width="86" height="30" rx="8" fill="#4F46E5" />
+      <text x="403" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Grade Now</text>
+    </g>
+
+    <!-- Submission Card 3: Graded -->
+    <g transform="translate(24, 256)">
+      <rect width="462" height="74" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="37" r="15" fill="#CFFAFE" />
+      <text x="28" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#0E7490" text-anchor="middle">RK</text>
+      
+      <text x="56" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#1E293B">Rohan Kapoor</text>
+      <text x="56" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Excellent mathematical derivations included</text>
+
+      <rect x="370" y="20" width="76" height="34" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1" />
+      <text x="408" y="41" font-family="JetBrains Mono, monospace" font-size="14" font-weight="800" fill="#047857" text-anchor="middle">92/100</text>
+    </g>
+  </g>
+</svg>

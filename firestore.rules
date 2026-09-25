@@ -1,0 +1,159 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isTeacherOwner(teacherId) {
+      return isSignedIn() && request.auth.uid == teacherId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Teacher institutes & profiles
+    match /teachers/{teacherId} {
+      allow get, list: if isSignedIn() && isValidId(teacherId);
+      allow create, update, delete: if isSignedIn() && request.auth.uid == teacherId;
+    }
+
+    // Classes
+    match /classes/{classId} {
+      allow get: if isSignedIn() && isValidId(classId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Enrollments
+    match /enrollments/{enrollmentId} {
+      allow get: if isSignedIn() && isValidId(enrollmentId) && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow create: if isSignedIn() && (
+        request.resource.data.teacherId == request.auth.uid || request.resource.data.studentId == request.auth.uid
+      );
+      allow update, delete: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+    }
+
+    // Attendance
+    match /attendance/{attendanceId} {
+      allow get: if isSignedIn() && isValidId(attendanceId) && (
+        resource.data.teacherId == request.auth.uid || resource.data.records[request.auth.uid] != null
+      );
+      allow list: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Assignments
+    match /assignments/{assignmentId} {
+      allow get: if isSignedIn() && isValidId(assignmentId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Submissions
+    match /submissions/{submissionId} {
+      allow get: if isSignedIn() && isValidId(submissionId) && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow delete: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+    }
+
+    // Study Materials
+    match /materials/{materialId} {
+      allow get: if isSignedIn() && isValidId(materialId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Storage Files Metadata Collection (Firebase Storage)
+    match /storage_files/{fileId} {
+      allow get: if isSignedIn() && isValidId(fileId);
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && (
+        request.resource.data.teacherId == request.auth.uid || request.resource.data.uploaderId == request.auth.uid
+      );
+      allow update, delete: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.uploaderId == request.auth.uid
+      );
+    }
+
+    // Fees
+    match /fees/{feeId} {
+      allow get: if isSignedIn() && isValidId(feeId) && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Payments
+    match /payments/{paymentId} {
+      allow get: if isSignedIn() && isValidId(paymentId) && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
+      );
+      allow create, update, delete: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+    }
+
+    // Announcements
+    match /announcements/{announcementId} {
+      allow get, list: if isSignedIn() && isValidId(announcementId);
+      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow get: if isSignedIn() && isValidId(notificationId) && resource.data.recipientId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+    }
+
+    // Connection test document
+    match /test/{docId} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

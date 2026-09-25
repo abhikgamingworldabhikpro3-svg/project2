@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="mat-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FAF5FF" />
+    </linearGradient>
+    <filter id="mat-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#581C87" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="450" rx="24" fill="url(#mat-bg)" />
+
+  <g filter="url(#mat-shadow)" transform="translate(45, 40)">
+    <rect width="510" height="370" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+
+    <!-- Header -->
+    <g transform="translate(24, 20)">
+      <rect width="32" height="32" rx="8" fill="#F3E8FF" />
+      <path d="M 9 9 L 16 7 L 23 9 L 23 23 L 16 21 L 9 23 Z" fill="none" stroke="#7C3AED" stroke-width="2" />
+      <line x1="16" y1="7" x2="16" y2="21" stroke="#7C3AED" stroke-width="1.5" />
+
+      <text x="44" y="16" font-family="Plus Jakarta Sans, sans-serif" font-size="14" font-weight="700" fill="#0F172A">Study Notes & AI Explanations</text>
+      <text x="44" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Organized by Subject, Chapter & Topic</text>
+
+      <!-- Sparkle Badge -->
+      <g transform="translate(360, 4)">
+        <rect width="100" height="28" rx="14" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1" />
+        <text x="50" y="19" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#7E22CE" text-anchor="middle">✨ AI Explainer</text>
+      </g>
+    </g>
+
+    <line x1="24" y1="68" x2="486" y2="68" stroke="#F1F5F9" stroke-width="1.5" />
+
+    <!-- Material Item 1 -->
+    <g transform="translate(24, 86)">
+      <rect width="462" height="74" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <rect x="16" y="15" width="44" height="44" rx="10" fill="#FEE2E2" />
+      <text x="38" y="42" font-family="JetBrains Mono, monospace" font-size="12" font-weight="800" fill="#DC2626" text-anchor="middle">PDF</text>
+      
+      <text x="72" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#1E293B">Calculus Fundamentals: Limits & Continuity</text>
+      <text x="72" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Chapter 01 · 18 Pages · Published by Prof. Harrison</text>
+
+      <rect x="380" y="22" width="68" height="30" rx="8" fill="#F1F5F9" />
+      <text x="414" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">Read</text>
+    </g>
+
+    <!-- Material Item 2 -->
+    <g transform="translate(24, 172)">
+      <rect width="462" height="74" rx="14" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <rect x="16" y="15" width="44" height="44" rx="10" fill="#E0E7FF" />
+      <text x="38" y="42" font-family="JetBrains Mono, monospace" font-size="12" font-weight="800" fill="#4338CA" text-anchor="middle">DOC</text>
+      
+      <text x="72" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#1E293B">Organic Chemistry Reaction Mechanisms Cheat Sheet</text>
+      <text x="72" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#64748B">Chapter 04 · High-yield summaries & diagrams</text>
+
+      <rect x="380" y="22" width="68" height="30" rx="8" fill="#F1F5F9" />
+      <text x="414" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">Read</text>
+    </g>
+
+    <!-- Material Item 3: AI Deep Think Breakdown -->
+    <g transform="translate(24, 258)">
+      <rect width="462" height="74" rx="14" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1" />
+      <rect x="16" y="15" width="44" height="44" rx="10" fill="#7C3AED" />
+      <text x="38" y="42" font-family="Plus Jakarta Sans, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle">✨</text>
+      
+      <text x="72" y="30" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="#581C87">Newtonian Dynamics & Gravitational Field Visualizer</text>
+      <text x="72" y="46" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="500" fill="#7E22CE">Generated with Gemini 3 Pro · High Thinking step breakdown</text>
+
+      <rect x="360" y="22" width="88" height="30" rx="8" fill="#7C3AED" />
+      <text x="404" y="41" font-family="Plus Jakarta Sans, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">AI Interactive</text>
+    </g>
+  </g>
+</svg>

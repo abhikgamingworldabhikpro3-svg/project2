@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Tabular numbers for all financial, statistical, and numerical displays */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Background Theme Implementations */
+.bg-theme-studio {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(14, 165, 233, 0.06) 0px, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%2364748B' fill-opacity='0.08'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.bg-theme-blueprint {
+  background-color: #f1f5f9;
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.08), transparent 70%);
+  background-size: 24px 24px, 24px 24px, 100% 100%;
+  background-attachment: fixed;
+}
+
+.bg-theme-aurora {
+  background-color: #faf5ff;
+  background-image: 
+    radial-gradient(at 20% 15%, rgba(168, 85, 247, 0.15) 0px, transparent 55%),
+    radial-gradient(at 80% 25%, rgba(6, 182, 212, 0.14) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(79, 70, 229, 0.12) 0px, transparent 60%),
+    radial-gradient(at 90% 80%, rgba(244, 63, 94, 0.08) 0px, transparent 40%),
+    url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='0.8' fill='%23475569' fill-opacity='0.05'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.bg-theme-nebula {
+  background-color: #0b0f19;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.25) 0px, transparent 50%),
+    radial-gradient(at 85% 35%, rgba(14, 165, 233, 0.2) 0px, transparent 45%),
+    radial-gradient(at 50% 85%, rgba(168, 85, 247, 0.18) 0px, transparent 55%),
+    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.2' fill='%23FFFFFF' fill-opacity='0.1'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.bg-theme-academic {
+  background-color: #f0fdf4;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(5, 150, 105, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(20, 184, 166, 0.08) 0px, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='28' height='28' viewBox='0 0 28 28' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='0.9' fill='%23059669' fill-opacity='0.08'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+.bg-theme-sunset {
+  background-color: #fffbeb;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(245, 158, 11, 0.12) 0px, transparent 55%),
+    radial-gradient(at 85% 20%, rgba(239, 68, 68, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(168, 85, 247, 0.09) 0px, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='0.8' fill='%23D97706' fill-opacity='0.07'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Surface Classes */
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
+  border-color: rgba(199, 210, 254, 0.9);
+}
+
+/* Custom Scrollbar for Sleek Dashboards */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}

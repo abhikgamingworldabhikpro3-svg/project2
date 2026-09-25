@@ -1,0 +1,328 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing authentication and role info",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["teacher", "student", "admin"], "maxLength": 32 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "photoURL": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "TeacherProfile": {
+      "title": "TeacherProfile",
+      "description": "Institute settings and teacher profile details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "instituteName": { "type": "string", "maxLength": 128 },
+        "instituteLogo": { "type": "string", "maxLength": 512 },
+        "address": { "type": "string", "maxLength": 256 },
+        "currency": { "type": "string", "maxLength": 16 },
+        "timeZone": { "type": "string", "maxLength": 64 },
+        "academicYear": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "displayName", "instituteName"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "Tuition or coaching class created by a teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "subject": { "type": "string", "maxLength": 64 },
+        "batchName": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 500 },
+        "schedule": { "type": "string", "maxLength": 128 },
+        "startTime": { "type": "string", "maxLength": 16 },
+        "endTime": { "type": "string", "maxLength": 16 },
+        "maxStudents": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "archived"], "maxLength": 16 },
+        "joinCode": { "type": "string", "maxLength": 16 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "name", "subject", "joinCode", "status"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "Student enrollment in a teacher's class",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "studentEmail": { "type": "string", "maxLength": 256 },
+        "studentPhone": { "type": "string", "maxLength": 32 },
+        "guardianName": { "type": "string", "maxLength": 128 },
+        "guardianPhone": { "type": "string", "maxLength": 32 },
+        "address": { "type": "string", "maxLength": 256 },
+        "dateOfBirth": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["active", "pending", "dropped"], "maxLength": 16 },
+        "joinedAt": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "studentId", "studentName", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Session attendance log for a class",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "session": { "type": "string", "maxLength": 64 },
+        "totalPresent": { "type": "number" },
+        "totalAbsent": { "type": "number" },
+        "totalLate": { "type": "number" },
+        "totalExcused": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "date", "session"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Assignment created by a teacher for a class",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 160 },
+        "subject": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "instructions": { "type": "string", "maxLength": 2000 },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "maxMarks": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "closed"], "maxLength": 16 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "title", "dueDate", "maxMarks"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Student homework/assignment submission",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "assignmentId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "studentEmail": { "type": "string", "maxLength": 256 },
+        "submissionText": { "type": "string", "maxLength": 4000 },
+        "status": { "type": "string", "enum": ["submitted", "graded", "late"], "maxLength": 16 },
+        "marksObtained": { "type": "number" },
+        "feedback": { "type": "string", "maxLength": 1000 },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "gradedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "assignmentId", "classId", "teacherId", "studentId", "status"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Study material, notes, or educational resource",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 160 },
+        "subject": { "type": "string", "maxLength": 64 },
+        "chapter": { "type": "string", "maxLength": 100 },
+        "topic": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "type": { "type": "string", "enum": ["pdf", "image", "doc", "link", "youtube", "notes"], "maxLength": 16 },
+        "fileUrl": { "type": "string", "maxLength": 512 },
+        "linkUrl": { "type": "string", "maxLength": 512 },
+        "content": { "type": "string", "maxLength": 8000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "title", "type"]
+    },
+    "Fee": {
+      "title": "Fee",
+      "description": "Student fee invoice and payment tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "feeType": { "type": "string", "enum": ["monthly", "course", "admission", "custom"], "maxLength": 32 },
+        "totalPayable": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "remainingAmount": { "type": "number" },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["paid", "partially_paid", "pending", "overdue"], "maxLength": 16 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "studentId", "title", "totalPayable", "status"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Payment transaction receipt recorded by teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "feeId": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "amount": { "type": "number" },
+        "paymentDate": { "type": "string", "maxLength": 32 },
+        "method": { "type": "string", "enum": ["cash", "upi", "bank_transfer", "other"], "maxLength": 32 },
+        "transactionId": { "type": "string", "maxLength": 64 },
+        "receiptNumber": { "type": "string", "maxLength": 64 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "recordedBy": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "feeId", "teacherId", "studentId", "amount", "paymentDate", "method", "receiptNumber"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Teacher broadcast to all or specific classes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 160 },
+        "message": { "type": "string", "maxLength": 3000 },
+        "targetAudience": { "type": "string", "enum": ["all", "class"], "maxLength": 16 },
+        "publishDate": { "type": "string", "maxLength": 32 },
+        "expiryDate": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "teacherId", "classId", "title", "message"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app notifications for teachers and students",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "recipientId": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "maxLength": 500 },
+        "type": { "type": "string", "enum": ["assignment", "deadline", "grading", "material", "attendance", "announcement", "fee_reminder"], "maxLength": 32 },
+        "relatedId": { "type": "string", "maxLength": 128 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "recipientId", "title", "message", "type", "read"]
+    },
+    "StorageFile": {
+      "title": "StorageFile",
+      "description": "Metadata for files stored in Firebase Storage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 256 },
+        "storagePath": { "type": "string", "maxLength": 512 },
+        "downloadURL": { "type": "string", "maxLength": 1024 },
+        "size": { "type": "number" },
+        "contentType": { "type": "string", "maxLength": 128 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "uploaderId": { "type": "string", "maxLength": 128 },
+        "uploaderRole": { "type": "string", "enum": ["teacher", "student"], "maxLength": 32 },
+        "category": { "type": "string", "enum": ["study_material", "assignment_attachment", "submission", "receipt", "general"], "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "storagePath", "downloadURL", "teacherId", "uploaderId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles with role and profile metadata"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "TeacherProfile",
+      "description": "Teacher institute profile and settings"
+    },
+    "/classes/{classId}": {
+      "schema": "Class",
+      "description": "Teacher classes and join codes"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "Class enrollments linking students to classes and teachers"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "Attendance",
+      "description": "Attendance sessions for classes"
+    },
+    "/assignments/{assignmentId}": {
+      "schema": "Assignment",
+      "description": "Teacher assignments created for classes"
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Student assignment submissions and teacher grading"
+    },
+    "/materials/{materialId}": {
+      "schema": "Material",
+      "description": "Study materials and notes"
+    },
+    "/storage_files/{fileId}": {
+      "schema": "StorageFile",
+      "description": "Metadata collection for files uploaded to Firebase Storage"
+    },
+    "/fees/{feeId}": {
+      "schema": "Fee",
+      "description": "Fee billing and invoice records"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Payment transactions and receipt records"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Teacher announcements"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User notifications"
+    }
+  }
+}

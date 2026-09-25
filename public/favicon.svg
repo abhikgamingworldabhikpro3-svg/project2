@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Background Gradient: Deep Electric Indigo to Radiant Sky Blue -->
+    <linearGradient id="tf-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3730A3" />
+      <stop offset="45%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+
+    <!-- Cap Fill Gradient: Ultra-Crisp White to Soft Ice Blue -->
+    <linearGradient id="tf-cap" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E0E7FF" />
+    </linearGradient>
+
+    <!-- Dynamic Flow Wave Gradient -->
+    <linearGradient id="tf-wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="60%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#A5B4FC" />
+    </linearGradient>
+
+    <!-- Golden Spark Accent -->
+    <linearGradient id="tf-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <filter id="tf-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Modern Continuous Squircle Base -->
+  <rect width="64" height="64" rx="17" fill="url(#tf-bg)" />
+  
+  <!-- Subtle Internal Rim Highlight -->
+  <rect x="1.5" y="1.5" width="61" height="61" rx="15.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="1.5" />
+
+  <!-- TutorFlow Icon Core -->
+  <g filter="url(#tf-shadow)">
+    <!-- 1. The Bold Modern Graduation Cap (Top Diamond) -->
+    <!-- Point coordinates: Top(32, 13), Right(52, 23), Bottom(32, 33), Left(12, 23) -->
+    <polygon points="32,13 52,23 32,33 12,23" fill="url(#tf-cap)" />
+
+    <!-- 2. Cap Under-Bezel & Skull-Cap Arch -->
+    <path d="M 20,27.5 L 32,33.5 L 44,27.5 L 44,32 C 44,38 38.6,41.5 32,41.5 C 25.4,41.5 20,38 20,32 Z" fill="#C7D2FE" />
+
+    <!-- 3. Tassel Ribbon & Gleaming Gold Dot -->
+    <path d="M 48,24.5 C 50.5,29.5 52,34 50.5,39" fill="none" stroke="url(#tf-gold)" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="50.5" cy="40.5" r="2.2" fill="url(#tf-gold)" />
+
+    <!-- 4. Dynamic "Flow" Swoosh (Stylized Open Book / Energy Stream) -->
+    <path d="M 14,43.5 C 22,38 28.5,41 32,44 C 35.5,41 42,38 50,43.5 C 43.5,49.5 36.5,47.5 32,50.5 C 27.5,47.5 20.5,49.5 14,43.5 Z" fill="url(#tf-wave)" />
+    
+    <!-- 5. Central Flow Spine Dot / Spark -->
+    <circle cx="32" cy="44.2" r="1.6" fill="#38BDF8" />
+  </g>
+</svg>

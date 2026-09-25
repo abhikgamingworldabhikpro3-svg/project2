@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="dots-vignette" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="60%" stop-color="#F8FAFC" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#F1F5F9" stop-opacity="0.9" />
+    </radialGradient>
+    <pattern id="dot-matrix" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#64748B" fill-opacity="0.08" />
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#dots-vignette)" />
+  <rect width="1920" height="1080" fill="url(#dot-matrix)" />
+</svg>

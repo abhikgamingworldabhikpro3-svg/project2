@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Base Gradient -->
+    <linearGradient id="au-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAF5FF" />
+      <stop offset="35%" stop-color="#F5F3FF" />
+      <stop offset="70%" stop-color="#EEF2FF" />
+      <stop offset="100%" stop-color="#F0FDFA" />
+    </linearGradient>
+
+    <!-- Mesh Blobs -->
+    <radialGradient id="au-blob-1" cx="15%" cy="20%" r="50%">
+      <stop offset="0%" stop-color="#A855F7" stop-opacity="0.22" />
+      <stop offset="50%" stop-color="#6366F1" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#FAF5FF" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="au-blob-2" cx="80%" cy="15%" r="45%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.2" />
+      <stop offset="60%" stop-color="#3B82F6" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#EEF2FF" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="au-blob-3" cx="50%" cy="85%" r="55%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.18" />
+      <stop offset="50%" stop-color="#818CF8" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#FAF5FF" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="au-blob-4" cx="90%" cy="75%" r="40%">
+      <stop offset="0%" stop-color="#F43F5E" stop-opacity="0.12" />
+      <stop offset="70%" stop-color="#FDA4AF" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Fine Noise Dot Grid -->
+    <pattern id="au-dots" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="#475569" fill-opacity="0.07" />
+    </pattern>
+  </defs>
+
+  <!-- Base Canvas -->
+  <rect width="1920" height="1080" fill="url(#au-bg)" />
+
+  <!-- Aurora Blobs -->
+  <rect width="1920" height="1080" fill="url(#au-blob-1)" />
+  <rect width="1920" height="1080" fill="url(#au-blob-2)" />
+  <rect width="1920" height="1080" fill="url(#au-blob-3)" />
+  <rect width="1920" height="1080" fill="url(#au-blob-4)" />
+
+  <!-- Crisp Texture Dots -->
+  <rect width="1920" height="1080" fill="url(#au-dots)" />
+</svg>

@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="hc-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" />
+      <stop offset="60%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="board-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="accent-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="accent-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="accent-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#020617" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1280" height="720" fill="url(#hc-bg)" />
+
+  <!-- Soft Ambient Glows -->
+  <circle cx="640" cy="300" r="350" fill="#4F46E5" opacity="0.15" filter="blur(60px)" />
+  <circle cx="200" cy="500" r="220" fill="#0284C7" opacity="0.12" filter="blur(50px)" />
+  <circle cx="1080" cy="200" r="240" fill="#10B981" opacity="0.1" filter="blur(50px)" />
+
+  <!-- Background Educational Grid -->
+  <g stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="1">
+    <line x1="0" y1="120" x2="1280" y2="120" />
+    <line x1="0" y1="240" x2="1280" y2="240" />
+    <line x1="0" y1="360" x2="1280" y2="360" />
+    <line x1="0" y1="480" x2="1280" y2="480" />
+    <line x1="0" y1="600" x2="1280" y2="600" />
+    <line x1="160" y1="0" x2="160" y2="720" />
+    <line x1="320" y1="0" x2="320" y2="720" />
+    <line x1="480" y1="0" x2="480" y2="720" />
+    <line x1="640" y1="0" x2="640" y2="720" />
+    <line x1="800" y1="0" x2="800" y2="720" />
+    <line x1="960" y1="0" x2="960" y2="720" />
+    <line x1="1120" y1="0" x2="1120" y2="720" />
+  </g>
+
+  <!-- Central TutorFlow Interactive Master Screen -->
+  <g filter="url(#card-shadow)" transform="translate(180, 70)">
+    <!-- Main Slate Monitor Frame -->
+    <rect width="920" height="540" rx="28" fill="#1E293B" stroke="#334155" stroke-width="2" />
+    <!-- Inner Screen Bezel -->
+    <rect x="14" y="14" width="892" height="512" rx="20" fill="#0B132B" />
+
+    <!-- Top Window Bar -->
+    <rect x="14" y="14" width="892" height="44" rx="20" fill="#1E293B" />
+    <!-- Traffic lights -->
+    <circle cx="42" cy="36" r="6" fill="#EF4444" />
+    <circle cx="62" cy="36" r="6" fill="#F59E0B" />
+    <circle cx="82" cy="36" r="6" fill="#10B981" />
+    <!-- Breadcrumb -->
+    <text x="120" y="40" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="12" font-weight="600">
+      TutorFlow Platform • Apex Academy • Academic Session 2026-2027
+    </text>
+
+    <!-- Main Console Inside Monitor -->
+    <!-- Left Navigation Column in Mock UI -->
+    <rect x="28" y="72" width="180" height="438" rx="14" fill="#131C38" />
+    <rect x="42" y="90" width="152" height="32" rx="8" fill="#4F46E5" />
+    <text x="76" y="110" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="700">Dashboard</text>
+    <circle cx="58" cy="106" r="5" fill="#FFFFFF" />
+
+    <text x="76" y="150" fill="#94A3B8" font-family="sans-serif" font-size="11">Classes (8)</text>
+    <text x="76" y="185" fill="#94A3B8" font-family="sans-serif" font-size="11">Students (142)</text>
+    <text x="76" y="220" fill="#94A3B8" font-family="sans-serif" font-size="11">Attendance</text>
+    <text x="76" y="255" fill="#94A3B8" font-family="sans-serif" font-size="11">Assignments</text>
+    <text x="76" y="290" fill="#94A3B8" font-family="sans-serif" font-size="11">Study Materials</text>
+    <text x="76" y="325" fill="#94A3B8" font-family="sans-serif" font-size="11">Fee Collection</text>
+    <text x="76" y="360" fill="#94A3B8" font-family="sans-serif" font-size="11">Reports (CSV)</text>
+
+    <!-- Center Content Zone -->
+    <!-- Stat Card 1 -->
+    <rect x="224" y="72" width="200" height="96" rx="14" fill="#1E293B" stroke="#334155" />
+    <text x="242" y="98" fill="#94A3B8" font-family="sans-serif" font-size="11" font-weight="600">Active Students</text>
+    <text x="242" y="138" fill="#FFFFFF" font-family="sans-serif" font-size="28" font-weight="800">142</text>
+    <text x="296" y="136" fill="#34D399" font-family="sans-serif" font-size="11" font-weight="700">100% Isolated</text>
+
+    <!-- Stat Card 2 -->
+    <rect x="440" y="72" width="200" height="96" rx="14" fill="#1E293B" stroke="#334155" />
+    <text x="458" y="98" fill="#94A3B8" font-family="sans-serif" font-size="11" font-weight="600">Today Attendance</text>
+    <text x="458" y="138" fill="#38BDF8" font-family="sans-serif" font-size="28" font-weight="800">96.4%</text>
+    <text x="548" y="136" fill="#94A3B8" font-family="sans-serif" font-size="11">Present</text>
+
+    <!-- Stat Card 3 -->
+    <rect x="656" y="72" width="232" height="96" rx="14" fill="#1E293B" stroke="#334155" />
+    <text x="674" y="98" fill="#94A3B8" font-family="sans-serif" font-size="11" font-weight="600">Fees Collected</text>
+    <text x="674" y="138" fill="#34D399" font-family="sans-serif" font-size="28" font-weight="800">$18,450</text>
+
+    <!-- Interactive Attendance & Performance Graph -->
+    <rect x="224" y="184" width="416" height="200" rx="16" fill="#131C38" stroke="#334155" />
+    <text x="244" y="214" fill="#FFFFFF" font-family="sans-serif" font-size="13" font-weight="700">
+      Weekly Attendance & Quiz Performance
+    </text>
+    <!-- Graph Curves -->
+    <path d="M 250 340 C 310 320, 360 250, 420 270 C 480 290, 540 230, 610 240" fill="none" stroke="url(#accent-indigo)" stroke-width="4" stroke-linecap="round" />
+    <path d="M 250 350 C 310 340, 360 290, 420 310 C 480 320, 540 270, 610 280" fill="none" stroke="url(#accent-cyan)" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 4" />
+    <!-- Graph Nodes -->
+    <circle cx="420" cy="270" r="5" fill="#6366F1" stroke="#FFFFFF" stroke-width="2" />
+    <circle cx="610" cy="240" r="5" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" />
+
+    <!-- Class Roster Preview Box -->
+    <rect x="656" y="184" width="232" height="326" rx="16" fill="#131C38" stroke="#334155" />
+    <text x="676" y="214" fill="#FFFFFF" font-family="sans-serif" font-size="13" font-weight="700">Active Batches</text>
+    
+    <rect x="672" y="230" width="200" height="52" rx="10" fill="#1E293B" />
+    <text x="686" y="252" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="700">Calculus & Vectors</text>
+    <text x="686" y="268" fill="#94A3B8" font-family="sans-serif" font-size="10">Batch A • Join: 8K9B2X</text>
+
+    <rect x="672" y="294" width="200" height="52" rx="10" fill="#1E293B" />
+    <text x="686" y="316" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="700">AP Physics Mechanics</text>
+    <text x="686" y="332" fill="#94A3B8" font-family="sans-serif" font-size="10">Batch B • Join: 4P7L9V</text>
+
+    <rect x="672" y="358" width="200" height="52" rx="10" fill="#1E293B" />
+    <text x="686" y="380" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="700">Organic Chemistry</text>
+    <text x="686" y="396" fill="#94A3B8" font-family="sans-serif" font-size="10">Batch C • Join: 2M5W1T</text>
+
+    <!-- Bottom Action Bar inside Monitor -->
+    <rect x="224" y="400" width="416" height="110" rx="16" fill="#131C38" stroke="#334155" />
+    <text x="244" y="428" fill="#FFFFFF" font-family="sans-serif" font-size="12" font-weight="700">
+      Official Receipt & Fee Generator
+    </text>
+    <rect x="244" y="444" width="180" height="34" rx="8" fill="#059669" />
+    <text x="270" y="466" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="700">Verified Receipt: TF-8291</text>
+    <rect x="436" y="444" width="180" height="34" rx="8" fill="#334155" />
+    <text x="472" y="466" fill="#FFFFFF" font-family="sans-serif" font-size="11" font-weight="600">Export CSV Ledger</text>
+  </g>
+
+  <!-- Foreground Floating Badge Elements for Depth -->
+  <!-- Floating QR Join Code Badge -->
+  <g filter="url(#card-shadow)" transform="translate(100, 360)">
+    <rect width="180" height="140" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect x="14" y="14" width="60" height="60" rx="10" fill="#1E1B4B" />
+    <rect x="22" y="22" width="44" height="44" rx="6" fill="#FFFFFF" />
+    <rect x="30" y="30" width="28" height="28" fill="#4F46E5" />
+    <text x="86" y="38" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="800">Scan & Join</text>
+    <text x="86" y="54" fill="#64748B" font-family="sans-serif" font-size="10">Direct Class QR</text>
+    <rect x="14" y="88" width="152" height="36" rx="8" fill="#EEF2FF" />
+    <text x="36" y="111" fill="#4338CA" font-family="monospace" font-size="14" font-weight="700">CODE: 8K9B2X</text>
+  </g>
+
+  <!-- Floating Official Receipt Badge on Right -->
+  <g filter="url(#card-shadow)" transform="translate(1010, 320)">
+    <rect width="200" height="160" rx="18" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <circle cx="36" cy="36" r="14" fill="#D1FAE5" />
+    <path d="M 30 36 L 34 40 L 42 32" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <text x="60" y="34" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="800">Fee Collected</text>
+    <text x="60" y="48" fill="#64748B" font-family="sans-serif" font-size="10">Receipt #TF-10023</text>
+    <line x1="20" y1="64" x2="180" y2="64" stroke="#F1F5F9" stroke-width="1.5" />
+    <text x="24" y="86" fill="#64748B" font-family="sans-serif" font-size="10">Student</text>
+    <text x="176" y="86" text-anchor="end" fill="#0F172A" font-family="sans-serif" font-size="10" font-weight="700">Maya Chen</text>
+    <text x="24" y="106" fill="#64748B" font-family="sans-serif" font-size="10">Paid via UPI</text>
+    <text x="176" y="106" text-anchor="end" fill="#059669" font-family="sans-serif" font-size="11" font-weight="800">$150.00</text>
+    <rect x="20" y="120" width="160" height="26" rx="6" fill="#F8FAFC" />
+    <text x="100" y="137" text-anchor="middle" fill="#6366F1" font-family="sans-serif" font-size="10" font-weight="700">Printable / PDF Ready</text>
+  </g>
+</svg>

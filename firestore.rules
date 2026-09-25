@@ -30,7 +30,8 @@ service cloud.firestore {
 
     // Teacher institutes & profiles
     match /teachers/{teacherId} {
-      allow get, list: if isSignedIn() && isValidId(teacherId);
+      allow get: if isSignedIn() && isValidId(teacherId);
+      allow list: if isSignedIn();
       allow create, update, delete: if isSignedIn() && request.auth.uid == teacherId;
     }
 
@@ -44,12 +45,8 @@ service cloud.firestore {
 
     // Enrollments
     match /enrollments/{enrollmentId} {
-      allow get: if isSignedIn() && isValidId(enrollmentId) && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
-      allow list: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow get: if isSignedIn() && isValidId(enrollmentId);
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && (
         request.resource.data.teacherId == request.auth.uid || request.resource.data.studentId == request.auth.uid
       );
@@ -60,10 +57,8 @@ service cloud.firestore {
 
     // Attendance
     match /attendance/{attendanceId} {
-      allow get: if isSignedIn() && isValidId(attendanceId) && (
-        resource.data.teacherId == request.auth.uid || resource.data.records[request.auth.uid] != null
-      );
-      allow list: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow get: if isSignedIn() && isValidId(attendanceId);
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
     }
@@ -78,12 +73,8 @@ service cloud.firestore {
 
     // Submissions
     match /submissions/{submissionId} {
-      allow get: if isSignedIn() && isValidId(submissionId) && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
-      allow list: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow get: if isSignedIn() && isValidId(submissionId);
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
       allow update: if isSignedIn() && (
         resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
@@ -115,30 +106,23 @@ service cloud.firestore {
 
     // Fees
     match /fees/{feeId} {
-      allow get: if isSignedIn() && isValidId(feeId) && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
-      allow list: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow get: if isSignedIn() && isValidId(feeId);
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
     }
 
     // Payments
     match /payments/{paymentId} {
-      allow get: if isSignedIn() && isValidId(paymentId) && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
-      allow list: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow get: if isSignedIn() && isValidId(paymentId);
+      allow list: if isSignedIn();
       allow create, update, delete: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
     }
 
     // Announcements
     match /announcements/{announcementId} {
-      allow get, list: if isSignedIn() && isValidId(announcementId);
+      allow get: if isSignedIn() && isValidId(announcementId);
+      allow list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
     }

@@ -36,9 +36,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
   const [quickJoinCode, setQuickJoinCode] = useState(initialJoinCode);
 
-  // Interactive Live Feature Demo Tab in the Hero
-  const [activeFeatureTab, setActiveFeatureTab] = useState<'overview' | 'attendance' | 'fees' | 'assignments' | 'materials'>('overview');
-
   const openAuth = (role: UserRole, mode: 'login' | 'register') => {
     setAuthRole(role);
     setAuthMode(mode);
@@ -78,7 +75,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Zone 2: Navigation Links (Clean Typography, No Pill Enclosures) */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
             <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
-            <a href="#showcase" className="hover:text-indigo-600 transition-colors">Live Platform</a>
             <a href="#security" className="hover:text-indigo-600 transition-colors">Data Isolation</a>
           </nav>
 
@@ -171,120 +167,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <p className="mt-2 text-[11px] text-slate-400">
                 Students: Enter the 6-character code provided by your teacher to join instantly.
               </p>
-            </div>
-          </div>
-
-          {/* Interactive Live Showcase of TutorFlow Software */}
-          <div id="showcase" className="mt-14 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="rounded-3xl bg-slate-900/95 p-3 sm:p-5 shadow-2xl shadow-indigo-950/30 border border-slate-800">
-              {/* Feature Switcher Tabs */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800 px-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="ml-2 text-xs font-mono text-slate-400 hidden sm:inline">
-                    tutorflow.app/dashboard
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1 p-1 bg-slate-800/80 rounded-xl overflow-x-auto max-w-full">
-                  <button
-                    onClick={() => setActiveFeatureTab('overview')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                      activeFeatureTab === 'overview'
-                        ? 'bg-indigo-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Teacher Hub
-                  </button>
-                  <button
-                    onClick={() => setActiveFeatureTab('attendance')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                      activeFeatureTab === 'attendance'
-                        ? 'bg-indigo-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Attendance
-                  </button>
-                  <button
-                    onClick={() => setActiveFeatureTab('fees')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                      activeFeatureTab === 'fees'
-                        ? 'bg-indigo-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Fee Receipts
-                  </button>
-                  <button
-                    onClick={() => setActiveFeatureTab('assignments')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                      activeFeatureTab === 'assignments'
-                        ? 'bg-indigo-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Assignments
-                  </button>
-                  <button
-                    onClick={() => setActiveFeatureTab('materials')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                      activeFeatureTab === 'materials'
-                        ? 'bg-indigo-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Study Notes
-                  </button>
-                </div>
-              </div>
-
-              {/* Showcase Visual Display */}
-              <div className="mt-3 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800/80 relative min-h-[300px] sm:min-h-[460px] flex items-center justify-center">
-                {activeFeatureTab === 'overview' && (
-                  <img
-                    src="/hero_tuition_classroom.svg"
-                    alt="TutorFlow Multi-Teacher Tuition Dashboard"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-cover max-h-[540px]"
-                  />
-                )}
-                {activeFeatureTab === 'attendance' && (
-                  <img
-                    src="/feature_attendance.svg"
-                    alt="TutorFlow Student Attendance Register"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-contain max-h-[500px] p-4"
-                  />
-                )}
-                {activeFeatureTab === 'fees' && (
-                  <img
-                    src="/feature_fees.svg"
-                    alt="TutorFlow Tuition Fee Receipt Generator"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-contain max-h-[500px] p-4"
-                  />
-                )}
-                {activeFeatureTab === 'assignments' && (
-                  <img
-                    src="/feature_assignments.svg"
-                    alt="TutorFlow Homework & Grading System"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-contain max-h-[500px] p-4"
-                  />
-                )}
-                {activeFeatureTab === 'materials' && (
-                  <img
-                    src="/feature_materials.svg"
-                    alt="TutorFlow Study Materials and AI Explanations"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-contain max-h-[500px] p-4"
-                  />
-                )}
-              </div>
             </div>
           </div>
         </section>

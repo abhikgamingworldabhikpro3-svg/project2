@@ -70,7 +70,7 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2.5 w-64 rounded-3xl bg-white/95 backdrop-blur-2xl shadow-2xl border border-slate-200/90 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute right-0 mt-2.5 w-64 max-w-[88vw] sm:w-64 rounded-3xl bg-white/95 backdrop-blur-2xl shadow-2xl border border-slate-200/90 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="px-2.5 py-1.5 border-b border-slate-100 mb-1.5 flex items-center justify-between">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-indigo-500" />

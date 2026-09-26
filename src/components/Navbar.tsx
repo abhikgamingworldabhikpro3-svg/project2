@@ -29,25 +29,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand & Portal title */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div
             onClick={() => setActiveTab('dashboard')}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group"
           >
             <div className="relative">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
-                <GraduationCap className="w-5 h-5 text-white drop-shadow-sm" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
+                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow-sm" />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse" />
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-900 tracking-tight text-base sm:text-lg">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-slate-900 tracking-tight text-sm sm:text-lg">
                   Tutor<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">Flow</span>
                 </span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-2xs ${
+                  className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider shadow-2xs hidden min-[400px]:inline-flex ${
                     userProfile?.role === 'teacher'
                       ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200/80'
                       : 'bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 border border-emerald-200/80'
@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               {userProfile?.role === 'teacher' && (
-                <p className="text-[11px] font-medium text-slate-500 truncate max-w-[150px] sm:max-w-[240px]">
+                <p className="hidden min-[480px]:block text-[10px] sm:text-[11px] font-medium text-slate-500 truncate max-w-[100px] sm:max-w-[240px]">
                   {teacherProfile?.instituteName || 'Tuition Academy'}
                 </p>
               )}
@@ -66,9 +66,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Background Theme Selector */}
-          <BackgroundSelector />
+          <BackgroundSelector compact />
 
           {/* PWA Install Button */}
           <PWAInstallButton variant="nav" />
@@ -89,9 +89,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           <NotificationDropdown />
 
           {/* User Avatar & Logout */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200/80">
-            <div className="relative group/avatar">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-[1.5px] shadow-sm">
+          <div className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2 border-l border-slate-200/80">
+            <div className="relative group/avatar hidden min-[450px]:block">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-[1.5px] shadow-sm">
                 <div className="w-full h-full rounded-[10px] bg-white flex items-center justify-center text-indigo-700 font-extrabold text-xs uppercase overflow-hidden">
                   {userProfile?.photoURL ? (
                     <img
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={logout}
               title="Log Out"
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-95 cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-95 cursor-pointer flex items-center justify-center"
             >
               <LogOut className="w-4 h-4" />
             </button>

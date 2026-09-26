@@ -14,7 +14,9 @@ import {
   Sparkles,
   Users,
   X,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -38,6 +40,7 @@ interface NavItemDef {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, counts = {} }) => {
+  const { logout } = useAuth();
   const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
 
   const navItems: NavItemDef[] = [
@@ -311,6 +314,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, count
                   </button>
                 );
               })}
+            </div>
+
+            {/* Direct Logout Option in Mobile Drawer */}
+            <div className="pt-3 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileDrawerOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 cursor-pointer active:scale-95 transition-all"
+              >
+                <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-rose-50 text-rose-600">
+                  <LogOut className="w-3.5 h-3.5" strokeWidth={2.5} />
+                </div>
+                <span>Log Out</span>
+              </button>
             </div>
           </div>
         </div>

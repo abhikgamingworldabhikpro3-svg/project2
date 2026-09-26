@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Palette, Check } from 'lucide-react';
+import { Palette, Check, Sparkles } from 'lucide-react';
 import { useTheme, BackgroundTheme } from '../context/ThemeContext';
 
 export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
@@ -7,42 +7,42 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const themes: { id: BackgroundTheme; label: string; previewColor: string; desc: string }[] = [
+  const themes: { id: BackgroundTheme; label: string; previewGrad: string; desc: string }[] = [
     {
       id: 'blueprint',
       label: 'Blueprint Grid',
-      previewColor: 'bg-indigo-100 border-indigo-300',
-      desc: 'Technical coaching graph grid',
+      previewGrad: 'from-blue-500 to-indigo-600',
+      desc: 'Technical coaching graph & cyan aura',
     },
     {
       id: 'studio',
       label: 'Studio Minimal',
-      previewColor: 'bg-slate-100 border-slate-300',
-      desc: 'Clean paper with dot matrix',
+      previewGrad: 'from-slate-400 to-indigo-500',
+      desc: 'Clean paper with dual gradient glows',
     },
     {
       id: 'aurora',
       label: 'Aurora Glow',
-      previewColor: 'bg-purple-100 border-purple-300',
-      desc: 'Ambient violet & cyan light',
+      previewGrad: 'from-purple-500 via-pink-500 to-cyan-400',
+      desc: 'Luminous violet & cyan light mesh',
     },
     {
       id: 'academic',
       label: 'Academic Ivy',
-      previewColor: 'bg-emerald-100 border-emerald-400',
-      desc: 'Refined sage & botanical tint',
+      previewGrad: 'from-emerald-500 to-teal-600',
+      desc: 'Refined emerald botanical tint',
     },
     {
       id: 'sunset',
       label: 'Sunset Amber',
-      previewColor: 'bg-amber-100 border-amber-400',
-      desc: 'Warm golden hour energy',
+      previewGrad: 'from-amber-400 via-orange-500 to-rose-500',
+      desc: 'Warm golden hour radiant energy',
     },
     {
       id: 'nebula',
       label: 'Slate Nebula',
-      previewColor: 'bg-slate-900 border-indigo-500',
-      desc: 'Deep modern night mode',
+      previewGrad: 'from-indigo-600 via-purple-600 to-pink-600',
+      desc: 'Deep modern night mode galaxy',
     },
   ];
 
@@ -60,9 +60,9 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
     <div className="relative inline-block" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        title="Change Background Style"
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200/80 bg-white/80 hover:bg-white text-slate-700 hover:text-indigo-600 shadow-2xs backdrop-blur-xs transition-all cursor-pointer text-xs font-semibold ${
-          open ? 'ring-2 ring-indigo-500/20 border-indigo-500' : ''
+        title="Switch Visual Background Theme"
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-slate-200/80 bg-white/90 hover:bg-white text-slate-700 hover:text-indigo-600 shadow-2xs backdrop-blur-md transition-all duration-200 cursor-pointer text-xs font-bold active:scale-95 ${
+          open ? 'ring-2 ring-indigo-500/30 border-indigo-500 text-indigo-600' : ''
         }`}
       >
         <Palette className="w-3.5 h-3.5 text-indigo-600" />
@@ -70,10 +70,11 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-xl border border-slate-200/90 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-          <div className="px-2 py-1.5 border-b border-slate-100 mb-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-              Background Aesthetic
+        <div className="absolute right-0 mt-2.5 w-64 rounded-3xl bg-white/95 backdrop-blur-2xl shadow-2xl border border-slate-200/90 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+          <div className="px-2.5 py-1.5 border-b border-slate-100 mb-1.5 flex items-center justify-between">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-indigo-500" />
+              Visual Aura & Theme
             </span>
           </div>
           <div className="space-y-1">
@@ -86,20 +87,20 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
                     setBgTheme(t.id);
                     setOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between p-2 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? 'bg-indigo-50/80 text-indigo-950 font-bold'
-                      : 'hover:bg-slate-50 text-slate-700'
+                      ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-950 font-bold border border-indigo-200/60 shadow-xs'
+                      : 'hover:bg-slate-50 text-slate-700 hover:translate-x-0.5'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border shadow-2xs ${t.previewColor}`} />
+                    <span className={`w-5 h-5 rounded-full bg-gradient-to-br ${t.previewGrad} shadow-xs ring-1 ring-black/5`} />
                     <div>
-                      <p className="text-xs font-semibold">{t.label}</p>
-                      <p className="text-[10px] text-slate-400 leading-none mt-0.5">{t.desc}</p>
+                      <p className="text-xs font-bold text-slate-900">{t.label}</p>
+                      <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{t.desc}</p>
                     </div>
                   </div>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600" />}
+                  {isSelected && <Check className="w-4 h-4 text-indigo-600 stroke-[3]" />}
                 </button>
               );
             })}

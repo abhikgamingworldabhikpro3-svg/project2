@@ -290,30 +290,43 @@ export const ClassesView: React.FC = () => {
             const classEnrollments = enrollments.filter((e) => e.classId === c.id);
             const isFull = classEnrollments.length >= (c.maxStudents || 35);
 
+            const getSubjectColor = (subj: string) => {
+              const s = subj.toLowerCase();
+              if (s.includes('math')) return 'from-indigo-500 to-violet-600';
+              if (s.includes('physic')) return 'from-cyan-500 to-blue-600';
+              if (s.includes('chem')) return 'from-emerald-500 to-teal-600';
+              if (s.includes('bio')) return 'from-rose-500 to-pink-600';
+              if (s.includes('eng')) return 'from-amber-500 to-orange-500';
+              return 'from-purple-500 to-indigo-600';
+            };
+
             return (
               <div
                 key={c.id}
-                className="glass-card glass-card-hover rounded-3xl p-5 shadow-xs flex flex-col justify-between"
+                className="relative overflow-hidden glass-card glass-card-hover rounded-3xl p-5 shadow-xs flex flex-col justify-between border border-white/80 group"
               >
+                {/* Top Subtle Colorful Accent Line */}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${getSubjectColor(c.subject)} opacity-80`} />
+
                 <div>
                   {/* Card Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-[10px] uppercase">
+                        <span className={`px-2.5 py-0.5 rounded-full text-white font-extrabold text-[10px] uppercase shadow-2xs bg-gradient-to-r ${getSubjectColor(c.subject)}`}>
                           {c.subject}
                         </span>
                         {c.status === 'archived' && (
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-semibold text-[10px] uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold text-[10px] uppercase">
                             Archived
                           </span>
                         )}
                       </div>
-                      <h3 className="font-extrabold text-slate-900 text-base mt-1.5 leading-snug">
+                      <h3 className="font-black text-slate-900 text-base mt-2 leading-snug group-hover:text-indigo-600 transition-colors">
                         {c.name}
                       </h3>
                       {c.batchName && (
-                        <p className="text-xs text-slate-500 font-medium">{c.batchName}</p>
+                        <p className="text-xs text-slate-500 font-medium mt-0.5">{c.batchName}</p>
                       )}
                     </div>
 
@@ -321,14 +334,14 @@ export const ClassesView: React.FC = () => {
                       <button
                         onClick={() => setQrModalClass(c)}
                         title="View Join QR Code"
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                        className="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all cursor-pointer"
                       >
                         <QrCode className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(c)}
                         title="Edit Class Details"
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                        className="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all cursor-pointer"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -336,28 +349,28 @@ export const ClassesView: React.FC = () => {
                   </div>
 
                   {c.description && (
-                    <p className="mt-2 text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    <p className="mt-2.5 text-xs text-slate-500 line-clamp-2 leading-relaxed font-medium">
                       {c.description}
                     </p>
                   )}
 
-                  {/* Metadata Chips */}
-                  <div className="mt-4 space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  {/* Metadata Box */}
+                  <div className="mt-4 space-y-1.5 text-xs text-slate-600 bg-white/60 p-3 rounded-2xl border border-slate-100 shadow-2xs">
                     {c.schedule && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-medium">
+                        <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                         <span className="truncate">{c.schedule}</span>
                       </div>
                     )}
                     <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-medium">
+                        <Users className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                         <span>
-                          Enrolled: <strong>{classEnrollments.length}</strong> / {c.maxStudents || 35}
+                          Enrolled: <strong className="font-mono text-slate-900">{classEnrollments.length}</strong> / {c.maxStudents || 35}
                         </span>
                       </div>
                       {isFull && (
-                        <span className="text-[10px] text-amber-600 font-bold">Class Full</span>
+                        <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full font-bold">Class Full</span>
                       )}
                     </div>
                   </div>
@@ -367,15 +380,15 @@ export const ClassesView: React.FC = () => {
                 <div className="mt-5 pt-3 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                        Join Code
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Student Join Code
                       </span>
                       <button
                         onClick={() => handleCopyCode(c.joinCode)}
-                        className="font-mono text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 cursor-pointer"
+                        className="font-mono text-sm font-black text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 cursor-pointer mt-0.5 transition-colors"
                       >
-                        <span>{c.joinCode}</span>
-                        <Copy className="w-3 h-3 text-slate-400" />
+                        <span className="bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200/60">{c.joinCode}</span>
+                        <Copy className="w-3.5 h-3.5 text-indigo-400" />
                         {copiedId === c.joinCode && (
                           <span className="text-[10px] text-emerald-600 font-sans font-bold">
                             Copied!

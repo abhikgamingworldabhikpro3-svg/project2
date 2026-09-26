@@ -391,91 +391,126 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-xs">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-indigo-700 font-semibold mb-1">
-            <span>{userProfile?.displayName || currentUser?.displayName || 'Student'}</span>
-            <span aria-hidden="true" className="text-slate-300">·</span>
-            <span>Enrolled Student Portal</span>
-            <span aria-hidden="true" className="text-slate-300">·</span>
-            <span>Private Portal</span>
+      {/* Top Banner with Colorful Mesh Glow */}
+      <div className="relative overflow-hidden glass-card p-6 sm:p-7 rounded-3xl border border-white/70 shadow-lg shadow-indigo-500/5">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-60 h-60 bg-gradient-to-br from-indigo-500/15 via-purple-500/15 to-pink-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-aura" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold mb-1.5 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold uppercase tracking-wider text-[10px] shadow-2xs">
+                {userProfile?.displayName || currentUser?.displayName || 'Student'}
+              </span>
+              <span className="text-slate-400">·</span>
+              <span className="text-slate-600 font-medium">Student Learning Hub</span>
+              <span className="text-slate-400">·</span>
+              <span className="text-emerald-600 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Live Enrolled
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Student Learning Hub
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl font-medium">
+              Access your batches, verify class attendance, submit assignments, and study course materials.
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Student Learning Hub
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Access your classes, check attendance, turn in homework, and review study materials.
-          </p>
-        </div>
 
-        <button
-          onClick={() => setJoinModalOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-sm shadow-indigo-600/20 transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Join Class with Code</span>
-        </button>
+          <button
+            onClick={() => setJoinModalOpen(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/25 transition-all duration-200 active:scale-95 cursor-pointer self-start sm:self-auto"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Join Class with Code</span>
+          </button>
+        </div>
       </div>
 
-      {/* Student 4 Metric Cards with Glassmorphism and Tabular Numerals */}
+      {/* Student 4 Metric Cards with Colorful Accent Halos */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Classes */}
         <div
           onClick={() => setActiveTab('classes')}
-          className="p-5 rounded-2xl glass-card glass-card-hover cursor-pointer group"
+          className="relative overflow-hidden p-5 rounded-3xl glass-card glass-card-hover cursor-pointer group border border-white/80"
         >
-          <span className="text-xs font-semibold text-slate-500">My Classes</span>
-          <div className="mt-2 text-2xl font-black text-slate-900 tabular-nums font-mono">{myClasses.length}</div>
-          <span className="text-[11px] text-slate-400">Enrolled batches</span>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-indigo-500/15 to-transparent rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">My Classes</span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-600 text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+              <School className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tabular-nums font-mono">{myClasses.length}</div>
+          <span className="text-[11px] font-medium text-slate-400">Enrolled batches</span>
         </div>
 
+        {/* Card 2: Attendance */}
         <div
           onClick={() => setActiveTab('attendance')}
-          className="p-5 rounded-2xl glass-card glass-card-hover cursor-pointer group"
+          className="relative overflow-hidden p-5 rounded-3xl glass-card glass-card-hover cursor-pointer group border border-white/80"
         >
-          <span className="text-xs font-semibold text-slate-500">Attendance</span>
-          <div className="mt-2 text-2xl font-black text-emerald-600 tabular-nums font-mono">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/15 to-transparent rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Attendance</span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+              <CalendarCheck className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl font-black text-emerald-600 tabular-nums font-mono">
             {myAttendancePercent !== null ? `${myAttendancePercent}%` : 'N/A'}
           </div>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] font-medium text-slate-400">
             {myPresentCount} / {myTotalSessions} sessions attended
           </span>
         </div>
 
+        {/* Card 3: Assignments */}
         <div
           onClick={() => setActiveTab('assignments')}
-          className="p-5 rounded-2xl glass-card glass-card-hover cursor-pointer group"
+          className="relative overflow-hidden p-5 rounded-3xl glass-card glass-card-hover cursor-pointer group border border-white/80"
         >
-          <span className="text-xs font-semibold text-slate-500">Assignments</span>
-          <div className="mt-2 text-2xl font-black text-slate-900 tabular-nums font-mono">{myAssignments.length}</div>
-          <span className="text-[11px] text-slate-400">
-            {submissions.length} turned in ({submissions.filter((s) => s.status === 'graded').length}{' '}
-            graded)
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-rose-500/15 to-transparent rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Assignments</span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-600 text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+              <FileText className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tabular-nums font-mono">{myAssignments.length}</div>
+          <span className="text-[11px] font-medium text-slate-400">
+            {submissions.length} submitted ({submissions.filter((s) => s.status === 'graded').length} graded)
           </span>
         </div>
 
+        {/* Card 4: Study Materials */}
         <div
           onClick={() => setActiveTab('materials')}
-          className="p-5 rounded-2xl glass-card glass-card-hover cursor-pointer group"
+          className="relative overflow-hidden p-5 rounded-3xl glass-card glass-card-hover cursor-pointer group border border-white/80"
         >
-          <span className="text-xs font-semibold text-slate-500">Study Materials</span>
-          <div className="mt-2 text-2xl font-black text-slate-900 tabular-nums font-mono">{myMaterials.length}</div>
-          <span className="text-[11px] text-slate-400">Notes & diagrams</span>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/15 to-transparent rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Study Notes</span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+              <BookOpen className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tabular-nums font-mono">{myMaterials.length}</div>
+          <span className="text-[11px] font-medium text-slate-400">Notes & diagrams</span>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex overflow-x-auto p-1 glass-card rounded-2xl shadow-xs gap-1">
+      {/* Navigation Tabs with Vibrant Active States */}
+      <div className="flex overflow-x-auto p-1.5 glass-card rounded-2xl shadow-xs gap-1.5 border border-white/80">
         {(
           [
-            { id: 'classes', label: 'My Classes', icon: School },
-            { id: 'assignments', label: 'Assignments', icon: FileText },
-            { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
-            { id: 'materials', label: 'Study Materials', icon: BookOpen },
-            { id: 'storage', label: 'Cloud Files', icon: HardDrive },
-            { id: 'fees', label: 'Fees & Invoices', icon: CreditCard },
-            { id: 'announcements', label: 'Announcements', icon: Megaphone },
-            { id: 'profile', label: 'My Profile', icon: User },
+            { id: 'classes', label: 'My Classes', icon: School, activeGrad: 'bg-gradient-to-r from-sky-500 to-blue-600' },
+            { id: 'assignments', label: 'Assignments', icon: FileText, activeGrad: 'bg-gradient-to-r from-rose-500 to-pink-600' },
+            { id: 'attendance', label: 'Attendance', icon: CalendarCheck, activeGrad: 'bg-gradient-to-r from-amber-500 to-orange-500' },
+            { id: 'materials', label: 'Study Materials', icon: BookOpen, activeGrad: 'bg-gradient-to-r from-purple-600 to-pink-600' },
+            { id: 'storage', label: 'Cloud Files', icon: HardDrive, activeGrad: 'bg-gradient-to-r from-cyan-500 to-blue-600' },
+            { id: 'fees', label: 'Fees & Invoices', icon: CreditCard, activeGrad: 'bg-gradient-to-r from-emerald-600 to-teal-600' },
+            { id: 'announcements', label: 'Announcements', icon: Megaphone, activeGrad: 'bg-gradient-to-r from-orange-500 to-rose-500' },
+            { id: 'profile', label: 'My Profile', icon: User, activeGrad: 'bg-gradient-to-r from-slate-700 to-slate-900' },
           ] as const
         ).map((t) => {
           const Icon = t.icon;
@@ -484,10 +519,10 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl whitespace-nowrap transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? `${t.activeGrad} text-white shadow-md shadow-indigo-500/20`
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
               }`}
             >
               <Icon className="w-4 h-4" />

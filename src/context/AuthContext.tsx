@@ -237,14 +237,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err: unknown) {
       const e = err as Error;
-      console.error('Registration error:', e);
-      let humanMsg = e.message;
+      let humanMsg = e.message || 'Registration failed.';
       if (humanMsg.includes('auth/email-already-in-use')) {
-        humanMsg = 'This email is already registered. Please sign in instead.';
+        humanMsg = 'This email address is already registered. Please sign in instead.';
       } else if (humanMsg.includes('auth/weak-password')) {
-        humanMsg = 'Password must be at least 6 characters.';
+        humanMsg = 'Password must be at least 6 characters long.';
       } else if (humanMsg.includes('auth/invalid-email')) {
         humanMsg = 'Please enter a valid email address.';
+      } else if (humanMsg.includes('auth/network-request-failed')) {
+        humanMsg = 'Network connection error. Please check your internet connection and try again.';
       }
       setError(humanMsg);
       throw new Error(humanMsg);
@@ -261,12 +262,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await loadUserData(res.user);
     } catch (err: unknown) {
       const e = err as Error;
-      console.error('Login error:', e);
-      let humanMsg = e.message;
+      let humanMsg = e.message || 'Login failed.';
       if (humanMsg.includes('auth/user-not-found') || humanMsg.includes('auth/wrong-password') || humanMsg.includes('auth/invalid-credential')) {
         humanMsg = 'Invalid email or password. Please verify your credentials.';
       } else if (humanMsg.includes('auth/too-many-requests')) {
-        humanMsg = 'Too many failed login attempts. Please try again in a few moments.';
+        humanMsg = 'Too many failed login attempts. Please try again in a few moments or reset your password.';
+      } else if (humanMsg.includes('auth/invalid-email')) {
+        humanMsg = 'Please enter a valid email address.';
+      } else if (humanMsg.includes('auth/network-request-failed')) {
+        humanMsg = 'Network connection error. Please check your internet connection and try again.';
       }
       setError(humanMsg);
       throw new Error(humanMsg);
@@ -281,8 +285,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await sendPasswordResetEmail(auth, email);
     } catch (err: unknown) {
       const e = err as Error;
-      setError(e.message || 'Failed to send password reset email.');
-      throw e;
+      let humanMsg = e.message || 'Failed to send password reset email.';
+      if (humanMsg.includes('auth/user-not-found')) {
+        humanMsg = 'No account found with this email address.';
+      } else if (humanMsg.includes('auth/invalid-email')) {
+        humanMsg = 'Please enter a valid email address.';
+      }
+      setError(humanMsg);
+      throw new Error(humanMsg);
     }
   };
 

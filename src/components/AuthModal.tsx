@@ -53,47 +53,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [displayName, setDisplayName] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
-  const [selectedClassId, setSelectedClassId] = useState('');
-  const [classesList, setClassesList] = useState<{ id: string; name: string; subject: string; teacherId: string; joinCode: string }[]>([]);
+  const [joinCodeInput, setJoinCodeInput] = useState(prefilledJoinCode || '');
   const [instituteName, setInstituteName] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
   React.useEffect(() => {
-    if (!isOpen) return;
-    const fetchClasses = async () => {
-      try {
-        const { getDocs, collection, query, where } = await import('firebase/firestore');
-        const q = query(collection(db, 'classes'), where('status', '==', 'active'));
-        const snap = await getDocs(q);
-        const list = snap.docs.map((d) => {
-          const data = d.data();
-          return {
-            id: d.id,
-            name: data.name,
-            subject: data.subject,
-            teacherId: data.teacherId,
-            joinCode: data.joinCode || '',
-          };
-        });
-        setClassesList(list);
-        if (list.length > 0) {
-          const preselected = prefilledJoinCode
-            ? list.find((c) => c.joinCode.trim().toLowerCase() === prefilledJoinCode.trim().toLowerCase())
-            : null;
-          if (preselected) {
-            setSelectedClassId(preselected.id);
-          } else {
-            setSelectedClassId(list[0].id);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching classes for student auth signup:', err);
-      }
-    };
-    fetchClasses();
-  }, [isOpen, prefilledJoinCode]);
+    if (prefilledJoinCode) {
+      setJoinCodeInput(prefilledJoinCode.toUpperCase());
+    }
+  }, [prefilledJoinCode]);
 
   if (!isOpen) return null;
 
@@ -143,8 +113,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         return;
       }
 
+      const cleanJoinCode = joinCodeInput.trim().toUpperCase();
+
       try {
         setIsSubmitting(true);
+
+        // If student provided a join code, verify it before creating the account
+        let matchedClass: any = null;
+        if (role === 'student' && cleanJoinCode) {
+          const { collection, query, where, getDocs } = await import('firebase/firestore');
+          const q = query(
+            collection(db, 'classes'),
+            where('joinCode', '==', cleanJoinCode),
+            where('status', '==', 'active')
+          );
+          const snap = await getDocs(q);
+          if (snap.empty) {
+            setFormError('Invalid class join code. Please check with your teacher or leave blank to join later.');
+            setIsSubmitting(false);
+            return;
+          }
+          matchedClass = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        }
+
         await registerWithEmail(
           email.trim(),
           password,
@@ -166,36 +157,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               gender: gender,
             }, { merge: true });
 
-            // Automatically enroll in selected class if specified
-            if (selectedClassId) {
-              const chosenClass = classesList.find((c) => c.id === selectedClassId);
-              if (chosenClass) {
-                const newEnrollment = {
-                  teacherId: chosenClass.teacherId,
-                  classId: chosenClass.id,
-                  studentId: currentUid,
-                  studentName: displayName.trim(),
-                  studentEmail: email.trim().toLowerCase(),
-                  studentPhone: phone.trim(),
-                  gender: gender,
-                  status: 'active' as const,
-                  joinedAt: new Date().toISOString(),
-                  createdAt: new Date().toISOString(),
-                };
-                await addDoc(collection(db, 'enrollments'), newEnrollment);
+            // Create pending enrollment if join code was specified
+            if (matchedClass) {
+              const newEnrollment = {
+                teacherId: matchedClass.teacherId,
+                classId: matchedClass.id,
+                studentId: currentUid,
+                studentName: displayName.trim(),
+                studentEmail: email.trim().toLowerCase(),
+                studentPhone: phone.trim(),
+                gender: gender,
+                status: 'pending' as const,
+                joinedAt: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+              };
+              await addDoc(collection(db, 'enrollments'), newEnrollment);
 
-                // Create teacher notification
+              // Create teacher notification
+              try {
                 await addDoc(collection(db, 'notifications'), {
-                  recipientId: chosenClass.teacherId,
+                  recipientId: matchedClass.teacherId,
                   senderId: currentUid,
-                  title: 'New Student Enrolled!',
-                  message: `${displayName.trim()} registered and joined ${chosenClass.name}.`,
+                  title: 'New Student Join Request',
+                  message: `${displayName.trim()} registered with code ${cleanJoinCode} and requested to join ${matchedClass.name}. Please approve or decline.`,
                   type: 'material',
-                  relatedId: chosenClass.id,
+                  relatedId: matchedClass.id,
                   read: false,
                   createdAt: new Date().toISOString(),
                 });
-              }
+              } catch {}
             }
           }
         }
@@ -358,9 +348,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Error Notification */}
         {(formError || error) && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            <span className="leading-snug">{formError || error}</span>
+          <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/90 text-rose-700 text-xs animate-in fade-in space-y-2">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <span className="leading-snug font-medium flex-1">{formError || error}</span>
+            </div>
+            {((formError || error || '').toLowerCase().includes('already registered') ||
+              (formError || error || '').includes('email-already-in-use')) && (
+              <div className="pt-1 flex items-center justify-between border-t border-rose-200/60">
+                <span className="text-[11px] text-rose-600 font-medium">Already have an account?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormError(null);
+                    clearError();
+                    setMode('login');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                >
+                  Sign In to This Account →
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -440,28 +449,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                 )}
 
-                {/* Student specific: Class selection dropdown */}
+                {/* Student specific: Class Join Code input */}
                 {role === 'student' && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Initial Class Batch *
+                      Class Join Code <span className="text-slate-400 font-normal">(Optional · From your Teacher)</span>
                     </label>
-                    <select
-                      required
-                      value={selectedClassId}
-                      onChange={(e) => setSelectedClassId(e.target.value)}
-                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
-                    >
-                      {classesList.length === 0 ? (
-                        <option value="">No Active Classes Available</option>
-                      ) : (
-                        classesList.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name} — {c.subject}
-                          </option>
-                        ))
-                      )}
-                    </select>
+                    <div className="relative">
+                      <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                      <input
+                        type="text"
+                        maxLength={16}
+                        value={joinCodeInput}
+                        onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
+                        placeholder="e.g. MATH10"
+                        className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm font-mono uppercase tracking-wider rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition placeholder:normal-case placeholder:tracking-normal placeholder:font-sans"
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      If provided, a join request will be submitted to your teacher for approval.
+                    </p>
                   </div>
                 )}
 

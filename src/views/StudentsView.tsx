@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   CalendarCheck,
+  Check,
   CheckCircle2,
   Copy,
   CreditCard,
@@ -234,6 +235,54 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
     }
   };
 
+  const handleApproveStudent = async (enr: Enrollment, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      await updateDoc(doc(db, 'enrollments', enr.id), {
+        status: 'active',
+        updatedAt: new Date().toISOString(),
+      });
+      const cl = classes.find((c) => c.id === enr.classId);
+      await addDoc(collection(db, 'notifications'), {
+        recipientId: enr.studentId,
+        senderId: currentUser?.uid,
+        title: 'Class Join Request Approved! 🎉',
+        message: `Your instructor approved your request to join ${cl?.name || 'the class'}. You can now view class assignments, attendance, and study materials!`,
+        type: 'material',
+        relatedId: enr.classId,
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (err: unknown) {
+      handleFirestoreError(err, OperationType.UPDATE, `enrollments/${enr.id}`);
+    }
+  };
+
+  const handleDeclineStudent = async (enr: Enrollment, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm(`Decline join request from ${enr.studentName}?`)) return;
+    try {
+      await deleteDoc(doc(db, 'enrollments', enr.id));
+      if (selectedStudent?.id === enr.id) setSelectedStudent(null);
+      const cl = classes.find((c) => c.id === enr.classId);
+      await addDoc(collection(db, 'notifications'), {
+        recipientId: enr.studentId,
+        senderId: currentUser?.uid,
+        title: 'Join Request Declined',
+        message: `Your request to join ${cl?.name || 'the class'} was not accepted. Please verify your join code.`,
+        type: 'material',
+        relatedId: enr.classId,
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (err: unknown) {
+      handleFirestoreError(err, OperationType.DELETE, `enrollments/${enr.id}`);
+    }
+  };
+
+  const pendingEnrollments = enrollments.filter((e) => e.status === 'pending');
+  const activeEnrollments = enrollments.filter((e) => e.status === 'active');
+
   // Filter list
   const filtered = enrollments.filter((e) => {
     const matchesClass = selectedClassFilter === 'all' || e.classId === selectedClassFilter;
@@ -348,6 +397,75 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
         </div>
       </div>
 
+      {/* Pending Student Join Requests Review */}
+      {pendingEnrollments.length > 0 && (
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-amber-50/95 via-orange-50/80 to-amber-50/95 border-2 border-amber-300/90 shadow-md shadow-amber-500/10 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                <UserCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-black text-amber-950 text-sm sm:text-base">
+                  Pending Join Code Requests ({pendingEnrollments.length})
+                </h3>
+                <p className="text-xs text-amber-800 font-medium">
+                  Review and approve students who entered your 6-character class code.
+                </p>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-amber-200 text-amber-900 text-[10px] font-black uppercase tracking-wider">
+              Requires Approval
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
+            {pendingEnrollments.map((pen) => {
+              const reqClass = classes.find((c) => c.id === pen.classId);
+              return (
+                <div
+                  key={pen.id}
+                  className="p-4 rounded-2xl bg-white border border-amber-200 shadow-xs flex flex-col justify-between gap-3"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-extrabold text-[9px] uppercase">
+                        {reqClass?.subject || 'Class'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-bold">
+                        {reqClass?.batchName || 'General'}
+                      </span>
+                    </div>
+                    <h4 className="font-extrabold text-slate-900 text-sm mt-1">{pen.studentName}</h4>
+                    <p className="text-xs text-slate-500">{pen.studentEmail}</p>
+                    {pen.studentPhone && (
+                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">{pen.studentPhone}</p>
+                    )}
+                    <p className="text-[11px] font-bold text-indigo-700 mt-0.5">Class: {reqClass?.name}</p>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button
+                      onClick={(e) => handleDeclineStudent(pen, e)}
+                      className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition active:scale-95 cursor-pointer"
+                    >
+                      Decline
+                    </button>
+                    <button
+                      onClick={(e) => handleApproveStudent(pen, e)}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Approve</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Roster Table */}
       {loading ? (
         <div className="py-12 text-center text-xs text-slate-400">Loading student roster...</div>
@@ -373,6 +491,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                 <tr>
                   <th className="py-3.5 px-4">Student</th>
                   <th className="py-3.5 px-4">Class & Batch</th>
+                  <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4">Contact</th>
                   <th className="py-3.5 px-4">Guardian</th>
                   <th className="py-3.5 px-4">Enrolled Date</th>
@@ -410,21 +529,44 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="text-slate-600">{enr.studentPhone || '—'}</span>
+                        {enr.status === 'pending' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Pending
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="text-slate-600 font-mono text-[11px]">{enr.studentPhone || '—'}</span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="font-medium text-slate-700 block">
                           {enr.guardianName || '—'}
                         </span>
                         {enr.guardianPhone && (
-                          <span className="text-[11px] text-slate-400">{enr.guardianPhone}</span>
+                          <span className="text-[11px] text-slate-400 font-mono">{enr.guardianPhone}</span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-slate-500">
+                      <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
                         {new Date(enr.joinedAt).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
+                          {enr.status === 'pending' && (
+                            <button
+                              onClick={(e) => handleApproveStudent(enr, e)}
+                              title="Approve student request"
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition active:scale-95"
+                            >
+                              <Check className="w-3 h-3" />
+                              <span>Approve</span>
+                            </button>
+                          )}
                           <button
                             onClick={() => handleOpenEdit(enr)}
                             title="Edit student"

@@ -18,8 +18,10 @@ import {
   School,
   Sparkles,
   TrendingUp,
+  UserCheck,
   UserPlus,
   Users,
+  X,
 } from 'lucide-react';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
@@ -178,8 +180,55 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   // Compute metrics
   const activeClassesCount = classes.filter((c) => c.status === 'active').length;
-  const uniqueStudents = Array.from(new Set(enrollments.map((e) => e.studentEmail || e.studentId)));
+  const activeEnrollments = enrollments.filter((e) => e.status === 'active');
+  const pendingEnrollments = enrollments.filter((e) => e.status === 'pending');
+  const uniqueStudents = Array.from(new Set(activeEnrollments.map((e) => e.studentEmail || e.studentId)));
   const totalStudentsCount = uniqueStudents.length;
+
+  // Approve / Decline Student Join Requests
+  const handleApproveStudent = async (enr: Enrollment) => {
+    try {
+      const { doc, updateDoc, addDoc, collection } = await import('firebase/firestore');
+      await updateDoc(doc(db, 'enrollments', enr.id), {
+        status: 'active',
+        updatedAt: new Date().toISOString(),
+      });
+      const cl = classes.find((c) => c.id === enr.classId);
+      await addDoc(collection(db, 'notifications'), {
+        recipientId: enr.studentId,
+        senderId: currentUser?.uid,
+        title: 'Class Join Request Approved! 🎉',
+        message: `Your instructor approved your request to join ${cl?.name || 'the class'}. You now have full access to assignments, attendance, and study materials!`,
+        type: 'material',
+        relatedId: enr.classId,
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (err: unknown) {
+      handleFirestoreError(err, OperationType.UPDATE, `enrollments/${enr.id}`);
+    }
+  };
+
+  const handleDeclineStudent = async (enr: Enrollment) => {
+    if (!window.confirm(`Decline join request from ${enr.studentName}?`)) return;
+    try {
+      const { doc, deleteDoc, addDoc, collection } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'enrollments', enr.id));
+      const cl = classes.find((c) => c.id === enr.classId);
+      await addDoc(collection(db, 'notifications'), {
+        recipientId: enr.studentId,
+        senderId: currentUser?.uid,
+        title: 'Join Request Declined',
+        message: `Your request to join ${cl?.name || 'the class'} was not accepted. Please verify your join code.`,
+        type: 'material',
+        relatedId: enr.classId,
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (err: unknown) {
+      handleFirestoreError(err, OperationType.DELETE, `enrollments/${enr.id}`);
+    }
+  };
 
   // Attendance metrics
   const todayAttRecords = attendance.filter((a) => a.date === todayStr);
@@ -197,7 +246,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const totalCollectedFees = fees.reduce((acc, f) => acc + (f.amountPaid || 0), 0);
   const totalUnpaidFees = fees.reduce((acc, f) => acc + (f.remainingAmount || 0), 0);
   const overdueFeesCount = fees.filter(
-    (f) => f.status === 'overdue' || (f.status === 'pending' && f.dueDate < todayStr)
+    (f) => f.status === 'due' && f.dueDate && f.dueDate < todayStr
   ).length;
 
   if (loading) {
@@ -280,6 +329,82 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           secondaryActionLabel="Invite Student"
           onSecondaryAction={onOpenInviteStudent}
         />
+      )}
+
+      {/* Pending Student Join Requests Review Widget */}
+      {pendingEnrollments.length > 0 && (
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-amber-50/95 via-orange-50/80 to-amber-50/95 border-2 border-amber-300/80 shadow-lg shadow-amber-500/10 space-y-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/80">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-md shadow-amber-500/25">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-amber-950 text-base sm:text-lg flex items-center gap-2">
+                  <span>Student Join Requests Awaiting Approval</span>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-white text-xs font-black">
+                    {pendingEnrollments.length} New
+                  </span>
+                </h3>
+                <p className="text-xs text-amber-800 font-medium">
+                  Students used your private 6-character join code. Approve their request to unlock their class dashboard.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveTab('students')}
+              className="px-4 py-2 rounded-xl bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 font-bold text-xs transition cursor-pointer self-start sm:self-auto"
+            >
+              View in Students Directory &rarr;
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {pendingEnrollments.map((enr) => {
+              const cl = classes.find((c) => c.id === enr.classId);
+              return (
+                <div
+                  key={enr.id}
+                  className="p-4 rounded-2xl bg-white border border-amber-200 shadow-xs flex flex-col justify-between gap-3 hover:border-amber-400 transition"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-black uppercase tracking-wider">
+                        {cl?.subject || 'Class'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-semibold">
+                        {cl?.batchName || 'General'}
+                      </span>
+                    </div>
+                    <h4 className="font-black text-slate-900 text-sm mt-1.5">{enr.studentName}</h4>
+                    <p className="text-xs text-slate-500 truncate">{enr.studentEmail}</p>
+                    {enr.studentPhone && (
+                      <p className="text-[11px] text-slate-400 mt-0.5 font-mono">{enr.studentPhone}</p>
+                    )}
+                    <p className="text-[11px] font-bold text-indigo-700 mt-1">Class: {cl?.name}</p>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => handleDeclineStudent(enr)}
+                      className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition active:scale-95 cursor-pointer"
+                    >
+                      Decline
+                    </button>
+                    <button
+                      onClick={() => handleApproveStudent(enr)}
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs shadow-xs transition active:scale-95 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Approve</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* 4 Vivid, Distinctive Metric Cards */}

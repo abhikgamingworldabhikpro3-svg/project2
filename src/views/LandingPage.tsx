@@ -20,6 +20,8 @@ import {
 import { PWAInstallButton } from '../components/PWAInstallButton';
 import { BackgroundSelector } from '../components/BackgroundSelector';
 import { AuthModal } from '../components/AuthModal';
+import { PrivacyPolicyModal } from '../components/PrivacyPolicyModal';
+import { ContactModal } from '../components/ContactModal';
 import { UserRole } from '../types';
 
 interface LandingPageProps {
@@ -30,6 +32,8 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authRole, setAuthRole] = useState<UserRole>('teacher');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   const [quickJoinCode, setQuickJoinCode] = useState('');
 
@@ -72,7 +76,18 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
             <a href="#features" className="hover:text-indigo-600 transition-colors">Platform Features</a>
-            <a href="#security" className="hover:text-indigo-600 transition-colors">Privacy & Isolation</a>
+            <button
+              onClick={() => setPrivacyOpen(true)}
+              className="hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => setContactOpen(true)}
+              className="hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              Contact Support
+            </button>
           </nav>
 
           {/* Action CTAs */}
@@ -380,7 +395,26 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
             <span className="font-extrabold text-slate-900">TutorFlow</span>
             <span className="text-slate-400">— Multi-Teacher Tuition Management</span>
           </div>
-          <p className="font-medium">© 2026 TutorFlow Platform. Contact: avharapal@gmail.com</p>
+
+          <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
+            <button
+              onClick={() => setPrivacyOpen(true)}
+              className="hover:text-indigo-600 transition cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <span>·</span>
+            <button
+              onClick={() => setContactOpen(true)}
+              className="hover:text-indigo-600 transition cursor-pointer"
+            >
+              Contact Support
+            </button>
+            <span>·</span>
+            <span className="font-mono text-indigo-700">avharapal@gmail.com</span>
+          </div>
+
+          <p className="font-medium">© 2026 TutorFlow Platform. All rights reserved.</p>
         </div>
       </footer>
 
@@ -391,6 +425,19 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
         initialRole={authRole}
         initialMode={authMode}
         prefilledJoinCode={quickJoinCode}
+      />
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicyModal
+        isOpen={privacyOpen}
+        onClose={() => setPrivacyOpen(false)}
+        onOpenContact={() => setContactOpen(true)}
+      />
+
+      {/* Contact Support Modal */}
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
       />
     </div>
   );

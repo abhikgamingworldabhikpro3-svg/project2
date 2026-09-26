@@ -81,26 +81,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <BackgroundSelector compact />
             <PWAInstallButton variant="nav" />
             <button
               onClick={() => openAuth('student', 'login')}
-              className="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer whitespace-nowrap"
             >
               Student Portal
             </button>
             <button
               onClick={() => openAuth('teacher', 'login')}
-              className="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors hidden sm:inline-block cursor-pointer"
+              className="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors hidden sm:inline-block cursor-pointer whitespace-nowrap"
             >
               Teacher Login
             </button>
             <button
               onClick={() => openAuth('teacher', 'register')}
-              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/25 transition-all active:scale-95 cursor-pointer"
+              className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-[11px] sm:text-sm shadow-md shadow-indigo-600/25 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
             >
-              Get Started Free
+              <span className="sm:hidden">Start Free</span>
+              <span className="hidden sm:inline">Get Started Free</span>
             </button>
           </div>
         </div>
@@ -140,17 +141,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </p>
 
             {/* CTAs */}
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
               <button
                 onClick={() => openAuth('teacher', 'register')}
-                className="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition-all duration-200 active:scale-95 flex items-center gap-2.5 cursor-pointer"
+                className="px-5 sm:px-7 py-3 sm:py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black text-xs sm:text-base shadow-xl shadow-indigo-600/30 transition-all duration-200 active:scale-95 flex items-center gap-2 cursor-pointer"
               >
                 <span>Create Educator Account</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
               <button
                 onClick={() => openAuth('student', 'login')}
-                className="px-6 py-3.5 rounded-2xl border border-slate-200/90 bg-white/95 hover:bg-white text-slate-800 font-extrabold text-sm sm:text-base shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer hover:border-indigo-200 hover:text-indigo-600"
+                className="px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl border border-slate-200/90 bg-white/95 hover:bg-white text-slate-800 font-extrabold text-xs sm:text-base shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer hover:border-indigo-200 hover:text-indigo-600"
               >
                 Student Sign In
               </button>
@@ -159,18 +160,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Quick Student Join Box with Luminous Glow */}
             <div className="mt-10 max-w-md mx-auto p-4 sm:p-5 rounded-3xl bg-white/90 shadow-2xl shadow-indigo-500/10 border border-white/80 backdrop-blur-2xl relative">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 -z-10 pointer-events-none" />
-              <form onSubmit={handleQuickJoin} className="flex items-center gap-2">
+              <form onSubmit={handleQuickJoin} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <input
                   type="text"
                   value={quickJoinCode}
                   onChange={(e) => setQuickJoinCode(e.target.value.toUpperCase())}
                   placeholder="Enter 6-digit Join Code (e.g. 8K9B2X)"
                   maxLength={10}
-                  className="flex-1 px-4 py-3 text-xs sm:text-sm font-mono uppercase font-bold rounded-2xl border border-slate-200 bg-white/90 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 shadow-inner"
+                  className="flex-1 px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-mono uppercase font-bold rounded-2xl border border-slate-200 bg-white/90 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 shadow-inner text-center sm:text-left"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-3 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white font-black text-xs sm:text-sm whitespace-nowrap shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white font-black text-xs sm:text-sm whitespace-nowrap shadow-md transition-all active:scale-95 cursor-pointer"
                 >
                   Join Class
                 </button>

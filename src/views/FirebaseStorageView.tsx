@@ -142,7 +142,7 @@ export const FirebaseStorageView: React.FC = () => {
       await deleteStorageFile(file.storagePath, file.id);
     } catch (err) {
       console.error('Failed to delete file:', err);
-      alert('Failed to delete file from storage.');
+      setUploadError('Failed to delete file from storage. Please check permissions.');
     } finally {
       setDeletingId(null);
     }
@@ -405,6 +405,7 @@ export const FirebaseStorageView: React.FC = () => {
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">
                   Class Association
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                 </label>
                 <select
                   value={uploadClassId}

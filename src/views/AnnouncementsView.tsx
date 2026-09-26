@@ -290,7 +290,8 @@ export const AnnouncementsView: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Attachment Link (Optional)
+                  Attachment Link
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                 </label>
                 <input
                   type="url"

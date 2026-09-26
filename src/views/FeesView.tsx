@@ -573,7 +573,8 @@ export const FeesView: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Transaction / Reference ID (Optional)
+                  Transaction / Reference ID
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                 </label>
                 <input
                   type="text"

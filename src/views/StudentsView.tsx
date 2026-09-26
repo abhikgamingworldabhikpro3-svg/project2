@@ -649,6 +649,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Student Phone
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                   </label>
                   <input
                     type="tel"
@@ -664,6 +665,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Guardian Name
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                   </label>
                   <input
                     type="text"
@@ -676,6 +678,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Guardian Contact Phone
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                   </label>
                   <input
                     type="tel"
@@ -691,6 +694,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Date of Birth
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                   </label>
                   <input
                     type="date"
@@ -700,7 +704,10 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Address</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Address
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
+                  </label>
                   <input
                     type="text"
                     value={address}
@@ -714,6 +721,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Private Notes / Strengths & Weaknesses
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                 </label>
                 <textarea
                   rows={2}

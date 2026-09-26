@@ -315,7 +315,8 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
   // Submit Homework
   const handleSubmitHomework = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser || !submittingAssignment || !submissionText.trim()) return;
+    if (!currentUser || !submittingAssignment) return;
+    if (!submissionText.trim() && !submissionFile) return;
 
     try {
       setIsSubmittingTask(true);
@@ -343,7 +344,7 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
         studentId: currentUser.uid,
         studentName: userProfile?.displayName || currentUser.displayName || 'Student',
         studentEmail: currentUser.email?.toLowerCase() || '',
-        submissionText: submissionText.trim(),
+        submissionText: submissionText.trim() || (submissionFile ? `[Attached file: ${submissionFile.name}]` : ''),
         attachments,
         status: 'submitted' as const,
         submittedAt: new Date().toISOString(),
@@ -370,6 +371,7 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
 
       setSubmittingAssignment(null);
       setSubmissionText('');
+      setSubmissionFile(null);
     } catch (err: unknown) {
       handleFirestoreError(err, OperationType.WRITE, `submissions/${submittingAssignment.id}`);
     } finally {
@@ -1074,21 +1076,29 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
             <form onSubmit={handleSubmitHomework} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Your Answer & Work *
+                  Your Answer & Work
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">
+                    {submissionFile ? '(Optional when file is attached)' : '(Required)'}
+                  </span>
                 </label>
                 <textarea
-                  rows={5}
-                  required
+                  rows={4}
+                  required={!submissionFile}
                   value={submissionText}
                   onChange={(e) => setSubmissionText(e.target.value)}
-                  placeholder="Type your solution step-by-step or paste external document link..."
+                  placeholder={
+                    submissionFile
+                      ? "Optional: Add any comments, working notes, or steps for your teacher..."
+                      : "Type your solution step-by-step or paste external document link..."
+                  }
                   className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 font-mono"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Attach Homework File / Photo / PDF (Optional)
+                  Attach Homework File / Photo / PDF
+                  <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                 </label>
                 <div className="flex items-center gap-2">
                   <label className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 cursor-pointer font-semibold transition">

@@ -57,6 +57,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
   const [studentName, setStudentName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
   const [studentPhone, setStudentPhone] = useState('');
+  const [studentGender, setStudentGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [classId, setClassId] = useState('');
   const [guardianName, setGuardianName] = useState('');
   const [guardianPhone, setGuardianPhone] = useState('');
@@ -128,6 +129,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
     setStudentName('');
     setStudentEmail('');
     setStudentPhone('');
+    setStudentGender('Male');
     setGuardianName('');
     setGuardianPhone('');
     setAddress('');
@@ -142,6 +144,7 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
     setStudentName(enr.studentName);
     setStudentEmail(enr.studentEmail);
     setStudentPhone(enr.studentPhone || '');
+    setStudentGender((enr as any).gender || 'Male');
     setClassId(enr.classId);
     setGuardianName(enr.guardianName || '');
     setGuardianPhone(enr.guardianPhone || '');
@@ -153,16 +156,28 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser || !studentName.trim() || !studentEmail.trim() || !classId) return;
+    if (!currentUser || !studentName.trim() || !classId) return;
 
     try {
       setIsSubmitting(true);
+
+      let finalEmail = studentEmail.trim().toLowerCase();
+      if (!finalEmail) {
+        const cleanPhone = studentPhone.replace(/[^0-9]/g, '');
+        if (cleanPhone) {
+          finalEmail = `${cleanPhone}@tutorflow.com`;
+        } else {
+          finalEmail = `std_${Date.now()}_${Math.random().toString(36).substring(2, 6)}@tutorflow.com`;
+        }
+      }
+
       if (editingEnrollment) {
         const ref = doc(db, 'enrollments', editingEnrollment.id);
         await updateDoc(ref, {
           studentName: studentName.trim(),
-          studentEmail: studentEmail.trim().toLowerCase(),
+          studentEmail: finalEmail,
           studentPhone: studentPhone.trim(),
+          gender: studentGender,
           classId,
           guardianName: guardianName.trim(),
           guardianPhone: guardianPhone.trim(),
@@ -177,8 +192,9 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
           classId,
           studentId: `std_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           studentName: studentName.trim(),
-          studentEmail: studentEmail.trim().toLowerCase(),
+          studentEmail: finalEmail,
           studentPhone: studentPhone.trim(),
+          gender: studentGender,
           guardianName: guardianName.trim(),
           guardianPhone: guardianPhone.trim(),
           address: address.trim(),
@@ -635,11 +651,11 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Student Email *
+                    Student Email
+                    <span className="text-[11px] font-normal text-slate-400 ml-1.5">(Optional)</span>
                   </label>
                   <input
                     type="email"
-                    required
                     value={studentEmail}
                     onChange={(e) => setStudentEmail(e.target.value)}
                     placeholder="student@example.com"
@@ -658,6 +674,24 @@ export const StudentsView: React.FC<{ initialInviteOpen?: boolean }> = ({
                     placeholder="+1 (555) 019-2834"
                     className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Gender *
+                  </label>
+                  <select
+                    required
+                    value={studentGender}
+                    onChange={(e) => setStudentGender(e.target.value as any)}
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
 

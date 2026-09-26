@@ -44,6 +44,12 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
       previewGrad: 'from-indigo-600 via-purple-600 to-pink-600',
       desc: 'Deep modern night mode galaxy',
     },
+    {
+      id: 'obsidian',
+      label: 'Obsidian Night',
+      previewGrad: 'from-slate-800 to-slate-950',
+      desc: 'Ultra high-contrast dark space theme',
+    },
   ];
 
   useEffect(() => {

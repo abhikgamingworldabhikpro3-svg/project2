@@ -50,9 +50,7 @@ import {
 import { ReceiptModal } from '../components/ReceiptModal';
 import { EmptyState } from '../components/EmptyState';
 
-export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
-  initialJoinCode = '',
-}) => {
+export const StudentPortal: React.FC = () => {
   const { currentUser, userProfile, updateStudentProfile } = useAuth();
 
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -72,10 +70,7 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
   >('classes');
 
   // Modals & Forms
-  const [joinModalOpen, setJoinModalOpen] = useState(!!initialJoinCode);
-  const [joinCodeInput, setJoinCodeInput] = useState(initialJoinCode);
-  const [joinError, setJoinError] = useState<string | null>(null);
-  const [isJoining, setIsJoining] = useState(false);
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
 
   // Submit Homework Modal
   const [submittingAssignment, setSubmittingAssignment] = useState<Assignment | null>(null);
@@ -92,6 +87,24 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
   // Student Profile fields
   const [phone, setPhone] = useState(userProfile?.phone || '');
   const [savedProfileSuccess, setSavedProfileSuccess] = useState(false);
+
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const currentDayName = daysOfWeek[new Date().getDay()];
+  const [selectedTimetableDay, setSelectedTimetableDay] = useState<string>(currentDayName);
+
+  const getDaysForClass = (scheduleStr: string) => {
+    if (!scheduleStr) return [];
+    const days: string[] = [];
+    const s = scheduleStr.toLowerCase();
+    if (s.includes('mon') || s.includes('mnd')) days.push('Monday');
+    if (s.includes('tue') || s.includes('tus')) days.push('Tuesday');
+    if (s.includes('wed') || s.includes('wdn')) days.push('Wednesday');
+    if (s.includes('thu') || s.includes('thr')) days.push('Thursday');
+    if (s.includes('fri')) days.push('Friday');
+    if (s.includes('sat')) days.push('Saturday');
+    if (s.includes('sun')) days.push('Sunday');
+    return days;
+  };
 
   useEffect(() => {
     if (!currentUser) return;
@@ -249,66 +262,67 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
   const myAttendancePercent =
     myTotalSessions > 0 ? Math.round((myPresentCount / myTotalSessions) * 100) : null;
 
-  // Join Class Handler
-  const handleJoinClassSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentUser || !joinCodeInput.trim()) return;
+  // Direct Class Enrollment Toggle Handler (replaces invitation codes)
+  const toggleEnrollment = async (classItem: ClassItem) => {
+    if (!currentUser) return;
+    const uid = currentUser.uid;
+    const userEmail = currentUser.email?.toLowerCase() || '';
+
+    // Check if enrolled
+    const enrollment = enrollments.find((en) => en.classId === classItem.id);
 
     try {
-      setIsJoining(true);
-      setJoinError(null);
-      const code = joinCodeInput.trim().toUpperCase();
+      const { collection, addDoc, doc, deleteDoc } = await import('firebase/firestore');
+      
+      if (enrollment) {
+        // Leave Class: Delete enrollment from Firestore
+        await deleteDoc(doc(db, 'enrollments', enrollment.id));
 
-      // Find class by join code
-      const targetClass = classes.find((c) => c.joinCode === code);
-      if (!targetClass) {
-        throw new Error('Class not found. Please double-check your 6-digit join code.');
-      }
-
-      // Check if already enrolled
-      const isAlreadyEnrolled = enrollments.some((en) => en.classId === targetClass.id);
-      if (isAlreadyEnrolled) {
-        throw new Error('You are already enrolled in this class.');
-      }
-
-      // Create enrollment in Firestore
-      const newEnrollment = {
-        teacherId: targetClass.teacherId,
-        classId: targetClass.id,
-        studentId: currentUser.uid,
-        studentName: userProfile?.displayName || currentUser.displayName || 'Student',
-        studentEmail: currentUser.email?.toLowerCase() || '',
-        studentPhone: userProfile?.phone || '',
-        status: 'active' as const,
-        joinedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-      };
-
-      await addDoc(collection(db, 'enrollments'), newEnrollment);
-
-      // Create notification for teacher
-      try {
-        await addDoc(collection(db, 'notifications'), {
-          recipientId: targetClass.teacherId,
-          senderId: currentUser.uid,
-          title: 'New Student Joined!',
-          message: `${newEnrollment.studentName} joined ${targetClass.name}.`,
-          type: 'material',
-          relatedId: targetClass.id,
-          read: false,
+        // Create teacher notification about student leaving
+        try {
+          await addDoc(collection(db, 'notifications'), {
+            recipientId: classItem.teacherId,
+            senderId: uid,
+            title: 'Student Unenrolled',
+            message: `${userProfile?.displayName || currentUser.displayName || 'A student'} left ${classItem.name}.`,
+            type: 'material',
+            relatedId: classItem.id,
+            read: false,
+            createdAt: new Date().toISOString(),
+          });
+        } catch {}
+      } else {
+        // Join Class: Add enrollment
+        const newEnrollment = {
+          teacherId: classItem.teacherId,
+          classId: classItem.id,
+          studentId: uid,
+          studentName: userProfile?.displayName || currentUser.displayName || 'Student',
+          studentEmail: userEmail,
+          studentPhone: userProfile?.phone || '',
+          gender: userProfile?.gender || 'Male',
+          status: 'active' as const,
+          joinedAt: new Date().toISOString(),
           createdAt: new Date().toISOString(),
-        });
-      } catch {
-        // Notification silent
-      }
+        };
+        await addDoc(collection(db, 'enrollments'), newEnrollment);
 
-      setJoinModalOpen(false);
-      setJoinCodeInput('');
+        // Create teacher notification about student joining
+        try {
+          await addDoc(collection(db, 'notifications'), {
+            recipientId: classItem.teacherId,
+            senderId: uid,
+            title: 'Student Enrolled',
+            message: `${newEnrollment.studentName} joined ${classItem.name} directly from Dashboard.`,
+            type: 'material',
+            relatedId: classItem.id,
+            read: false,
+            createdAt: new Date().toISOString(),
+          });
+        } catch {}
+      }
     } catch (err: unknown) {
-      const e = err as Error;
-      setJoinError(e.message || 'Failed to join class.');
-    } finally {
-      setIsJoining(false);
+      handleFirestoreError(err, OperationType.UPDATE, 'enrollments');
     }
   };
 
@@ -534,20 +548,148 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
         })}
       </div>
 
-      {/* Tab Content 1: My Classes */}
-      {activeTab === 'classes' && (
+      <div key={activeTab} className="smooth-tab-entry">
+        {/* Tab Content 1: My Classes */}
+        {activeTab === 'classes' && (
         <div className="space-y-4">
           {myClasses.length === 0 ? (
             <EmptyState
               icon={School}
               title="You haven't joined any classes yet"
-              description="Ask your teacher for a 6-digit class join code to access lectures and assignments."
-              actionLabel="Join Class with Code"
+              description="Browse our Academy Class Directory to enroll in your active tuition batches and courses."
+              actionLabel="Browse Academy Directory"
               onAction={() => setJoinModalOpen(true)}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {myClasses.map((c) => (
+            <div className="space-y-6">
+              {/* Visual Weekly Class Timetable Slot Component */}
+              <div className="glass-card rounded-3xl p-6 shadow-md border border-white/80 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+                
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                      <CalendarCheck className="w-5 h-5 text-indigo-600" />
+                      <span>My Weekly Lecture Schedule</span>
+                    </h3>
+                    <p className="text-xs text-slate-400">View your active coaching lectures mapped by day of week</p>
+                  </div>
+                  <span className="text-[11px] font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-wider">
+                    Today: {currentDayName}
+                  </span>
+                </div>
+
+                {/* Day Tabs */}
+                <div className="mt-4 flex flex-wrap gap-1 bg-slate-100 p-1 rounded-2xl">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Flexible'].map((day) => {
+                    const count = myClasses.filter((c) => {
+                      const days = getDaysForClass(c.schedule || '');
+                      return day === 'Flexible' ? days.length === 0 : days.includes(day);
+                    }).length;
+
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => setSelectedTimetableDay(day)}
+                        className={`flex-1 sm:flex-none px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 min-w-[80px] ${
+                          selectedTimetableDay === day
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs'
+                            : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
+                        }`}
+                      >
+                        <span>{day.slice(0, 3)}</span>
+                        {count > 0 && (
+                          <span className={`w-4 h-4 rounded-full text-[9px] font-black flex items-center justify-center ${
+                            selectedTimetableDay === day ? 'bg-white text-indigo-700' : 'bg-slate-200 text-slate-700'
+                          }`}>
+                            {count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Selected Day Classes */}
+                <div className="mt-5">
+                  {myClasses.filter((c) => {
+                    const days = getDaysForClass(c.schedule || '');
+                    return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+                  }).length === 0 ? (
+                    <div className="py-8 text-center bg-slate-50/50 border border-dashed border-slate-200/80 rounded-2xl">
+                      <p className="text-xs text-slate-400 font-semibold">No lectures scheduled for {selectedTimetableDay}.</p>
+                      {selectedTimetableDay !== 'Flexible' && (
+                        <p className="text-[10px] text-slate-400 mt-0.5">Perfect time to catch up on assignment homework!</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {myClasses
+                        .filter((c) => {
+                          const days = getDaysForClass(c.schedule || '');
+                          return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+                        })
+                        .map((c) => {
+                          const s = c.subject.toLowerCase();
+                          let colorClass = 'border-indigo-100 bg-indigo-50/20 text-indigo-700';
+                          if (s.includes('math')) colorClass = 'border-indigo-100 bg-indigo-50/30 text-indigo-700';
+                          else if (s.includes('physic')) colorClass = 'border-cyan-100 bg-cyan-50/30 text-cyan-700';
+                          else if (s.includes('chem')) colorClass = 'border-emerald-100 bg-emerald-50/30 text-emerald-700';
+                          else if (s.includes('bio')) colorClass = 'border-rose-100 bg-rose-50/30 text-rose-700';
+                          else if (s.includes('eng')) colorClass = 'border-amber-100 bg-amber-50/30 text-amber-700';
+
+                          return (
+                            <div
+                              key={c.id}
+                              className={`p-4 rounded-2xl border-2 ${colorClass} transition-all hover:-translate-y-0.5 hover:shadow-xs flex flex-col justify-between`}
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-white/80 border border-slate-100">
+                                    {c.subject}
+                                  </span>
+                                  {c.batchName && (
+                                    <span className="text-[10px] text-slate-500 font-bold">{c.batchName}</span>
+                                  )}
+                                </div>
+                                <h4 className="font-black text-slate-900 text-sm mt-2">{c.name}</h4>
+                              </div>
+
+                              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
+                                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                  <span className="truncate max-w-[150px]">{c.schedule}</span>
+                                </div>
+                                <button
+                                  onClick={() => setActiveTab('materials')}
+                                  className="text-[11px] font-extrabold text-indigo-600 hover:underline"
+                                >
+                                  Study Materials &rarr;
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* All Enrolled Classes Grid */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-extrabold text-slate-950 text-base">All Enrolled Batches</h3>
+                  <button
+                    onClick={() => setJoinModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/10 transition active:scale-[0.98] cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Manage / Change Classes</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {myClasses.map((c) => (
                 <div
                   key={c.id}
                   className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-indigo-200 hover:shadow-md transition"
@@ -582,9 +724,11 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
                 </div>
               ))}
             </div>
-          )}
+          </div>
         </div>
       )}
+    </div>
+  )}
 
       {/* Tab Content 2: Assignments */}
       {activeTab === 'assignments' && (
@@ -881,12 +1025,12 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      f.status === 'paid'
+                      f.remainingAmount === 0
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         : 'bg-rose-50 text-rose-700 border border-rose-200'
                     }`}
                   >
-                    {f.status.replace('_', ' ')}
+                    {f.remainingAmount === 0 ? 'Paid' : 'Due'}
                   </span>
                 </div>
               ))
@@ -1009,55 +1153,88 @@ export const StudentPortal: React.FC<{ initialJoinCode?: string }> = ({
           </form>
         </div>
       )}
+      </div>
 
-      {/* Join Class Modal */}
+      {/* Manage Class Enrollments Modal */}
       {joinModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl border border-slate-100 p-6 animate-in zoom-in-95 duration-150">
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Join Tuition Class</h3>
-            <p className="text-xs text-slate-500 mb-4">
-              Enter the 6-character code provided by your teacher.
-            </p>
-
-            <form onSubmit={handleJoinClassSubmit} className="space-y-3.5">
+          <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl border border-slate-100 p-6 animate-in zoom-in-95 duration-150 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Class Join Code *
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={10}
-                  value={joinCodeInput}
-                  onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
-                  placeholder="e.g. 8K9B2X"
-                  className="w-full px-3 py-2 text-center text-lg font-mono uppercase tracking-widest rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 font-bold"
-                />
+                <h3 className="text-lg font-black text-slate-900 leading-tight">Academy Class Directory</h3>
+                <p className="text-xs text-slate-400">Enroll in batches or update your registered classes</p>
               </div>
+              <button
+                onClick={() => setJoinModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {joinError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
-                  {joinError}
+            <div className="mt-4 overflow-y-auto space-y-3.5 pr-1 flex-1 py-1">
+              {classes.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  No active coaching classes registered in the academy yet.
                 </div>
-              )}
+              ) : (
+                classes.map((c) => {
+                  const isEnrolled = enrolledClassIds.has(c.id);
+                  const colors = c.subject.toLowerCase().includes('math') ? 'from-indigo-500 to-violet-600' :
+                                 c.subject.toLowerCase().includes('physic') ? 'from-cyan-500 to-blue-600' :
+                                 c.subject.toLowerCase().includes('chem') ? 'from-emerald-500 to-teal-600' :
+                                 c.subject.toLowerCase().includes('bio') ? 'from-rose-500 to-pink-600' :
+                                 c.subject.toLowerCase().includes('eng') ? 'from-amber-500 to-orange-500' :
+                                 'from-purple-500 to-indigo-600';
 
-              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setJoinModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isJoining || !joinCodeInput.trim()}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-sm transition disabled:opacity-50"
-                >
-                  {isJoining ? 'Joining...' : 'Join Class'}
-                </button>
-              </div>
-            </form>
+                  return (
+                    <div
+                      key={c.id}
+                      className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-sm hover:border-indigo-100 transition-all duration-150 flex items-center justify-between gap-4"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-md text-white font-extrabold text-[9px] uppercase bg-gradient-to-r ${colors}`}>
+                            {c.subject}
+                          </span>
+                          {c.batchName && (
+                            <span className="text-[10px] text-slate-400 font-bold">• {c.batchName}</span>
+                          )}
+                        </div>
+                        <h4 className="font-extrabold text-slate-900 text-sm mt-1">{c.name}</h4>
+                        {c.schedule && (
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-1">
+                            <Clock className="w-3 h-3 text-slate-400" />
+                            <span>{c.schedule}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => toggleEnrollment(c)}
+                        className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition active:scale-95 cursor-pointer whitespace-nowrap ${
+                          isEnrolled
+                            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs'
+                        }`}
+                      >
+                        {isEnrolled ? 'Leave Class' : 'Enroll Now'}
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setJoinModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
+              >
+                Close Directory
+              </button>
+            </div>
           </div>
         </div>
       )}

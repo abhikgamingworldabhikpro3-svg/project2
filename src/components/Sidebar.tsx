@@ -215,6 +215,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, count
               <span>&rarr;</span>
             </button>
           </div>
+
+          {/* Official Contact Support Info */}
+          <div className="mt-3 px-2 text-center">
+            <a href="mailto:avharapal@gmail.com" className="text-[10px] text-slate-400 hover:text-indigo-600 font-semibold transition-colors">
+              Support: avharapal@gmail.com
+            </a>
+          </div>
         </div>
       </aside>
 
@@ -316,8 +323,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, count
               })}
             </div>
 
-            {/* Direct Logout Option in Mobile Drawer */}
-            <div className="pt-3 border-t border-slate-100">
+             {/* Direct Logout & Support Option in Mobile Drawer */}
+            <div className="pt-3 border-t border-slate-100 space-y-2.5">
+              <div className="px-3 text-center">
+                <a href="mailto:avharapal@gmail.com" className="text-[10px] text-slate-400 hover:text-indigo-600 font-semibold transition-colors">
+                  Support: avharapal@gmail.com
+                </a>
+              </div>
               <button
                 onClick={() => {
                   logout();

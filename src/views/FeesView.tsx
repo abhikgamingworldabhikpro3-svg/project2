@@ -44,9 +44,7 @@ export const FeesView: React.FC = () => {
   // Filters & Tabs
   const [activeTab, setActiveTab] = useState<'invoices' | 'payments'>('invoices');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'partially_paid' | 'paid' | 'overdue'>(
-    'all'
-  );
+  const [statusFilter, setStatusFilter] = useState<'all' | 'due' | 'paid'>('all');
 
   // Modals
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
@@ -55,7 +53,7 @@ export const FeesView: React.FC = () => {
   const [viewingReceiptPayment, setViewingReceiptPayment] = useState<Payment | null>(null);
 
   // Invoice Form Fields
-  const [feeTitle, setFeeTitle] = useState('October 2026 Tuition Fee');
+  const [feeTitle, setFeeTitle] = useState('Monthly Tuition Fee');
   const [classId, setClassId] = useState('');
   const [studentId, setStudentId] = useState('');
   const [feeType, setFeeType] = useState<FeeRecord['feeType']>('monthly');
@@ -148,7 +146,7 @@ export const FeesView: React.FC = () => {
         amountPaid: 0,
         remainingAmount: Number(totalPayable),
         dueDate,
-        status: dueDate < todayStr ? 'overdue' : 'pending',
+        status: 'due',
         createdAt: new Date().toISOString(),
       };
 
@@ -202,8 +200,7 @@ export const FeesView: React.FC = () => {
       // Update fee record
       const newPaid = (selectedFeeForPayment.amountPaid || 0) + Number(paymentAmount);
       const newRemaining = Math.max(0, selectedFeeForPayment.totalPayable - newPaid);
-      const newStatus =
-        newRemaining === 0 ? 'paid' : newPaid > 0 ? 'partially_paid' : 'pending';
+      const newStatus = newRemaining === 0 ? 'paid' : 'due';
 
       await updateDoc(doc(db, 'fees', selectedFeeForPayment.id), {
         amountPaid: newPaid,
@@ -212,6 +209,21 @@ export const FeesView: React.FC = () => {
         updatedAt: new Date().toISOString(),
       });
 
+      // Notify student instantly when fee becomes fully paid
+      if (newStatus === 'paid') {
+        const newNotification = {
+          recipientId: selectedFeeForPayment.studentId,
+          senderId: currentUser.uid,
+          title: 'Fee Payment Success 🎉',
+          message: `Dear student, your payment of ${currency}${paymentAmount} for "${selectedFeeForPayment.title}" has been successfully recorded and marked as PAID. Thank you!`,
+          type: 'fee_reminder',
+          relatedId: selectedFeeForPayment.id,
+          read: false,
+          createdAt: new Date().toISOString(),
+        };
+        await addDoc(collection(db, 'notifications'), newNotification);
+      }
+
       // Show receipt immediately
       setIsPaymentModalOpen(false);
       setViewingReceiptPayment({ id: paymentDoc.id, ...newPayment });
@@ -219,6 +231,61 @@ export const FeesView: React.FC = () => {
       handleFirestoreError(err, OperationType.CREATE, 'payments');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Quick action: Toggle Paid / Due status button
+  const handleToggleFeeStatus = async (fee: FeeRecord) => {
+    if (!currentUser) return;
+    const isCurrentlyPaid = fee.status === 'paid';
+    const nextStatus = isCurrentlyPaid ? 'due' : 'paid';
+
+    try {
+      const updatedAmountPaid = isCurrentlyPaid ? 0 : fee.totalPayable;
+      const updatedRemaining = isCurrentlyPaid ? fee.totalPayable : 0;
+
+      await updateDoc(doc(db, 'fees', fee.id), {
+        status: nextStatus,
+        amountPaid: updatedAmountPaid,
+        remainingAmount: updatedRemaining,
+        updatedAt: new Date().toISOString(),
+      });
+
+      if (nextStatus === 'paid') {
+        // 1. Log a payment record
+        const receiptNumber = `TF-REC-${Date.now().toString().slice(-6)}`;
+        const paidDate = new Date().toISOString().split('T')[0];
+        const quickPayment: Omit<Payment, 'id'> = {
+          feeId: fee.id,
+          teacherId: currentUser.uid,
+          classId: fee.classId,
+          studentId: fee.studentId,
+          studentName: fee.studentName,
+          amount: fee.totalPayable,
+          paymentDate: paidDate,
+          method: 'cash',
+          receiptNumber,
+          notes: 'Marked as Paid instantly',
+          recordedBy: teacherProfile?.displayName || 'TutorFlow Teacher',
+          createdAt: new Date().toISOString(),
+        };
+        await addDoc(collection(db, 'payments'), quickPayment);
+
+        // 2. Notify student instantly!
+        const newNotification = {
+          recipientId: fee.studentId,
+          senderId: currentUser.uid,
+          title: 'Fee Payment Success 🎉',
+          message: `Dear student, your fee invoice for "${fee.title}" has been completed and marked as PAID. Thank you!`,
+          type: 'fee_reminder',
+          relatedId: fee.id,
+          read: false,
+          createdAt: new Date().toISOString(),
+        };
+        await addDoc(collection(db, 'notifications'), newNotification);
+      }
+    } catch (err: unknown) {
+      handleFirestoreError(err, OperationType.UPDATE, `fees/${fee.id}`);
     }
   };
 
@@ -238,13 +305,11 @@ export const FeesView: React.FC = () => {
 
   // Filtered fees
   const filteredFees = fees.filter((f) => {
-    const isOverdue = f.status === 'overdue' || (f.status === 'pending' && f.dueDate < todayStr);
+    const mappedStatus = f.status === 'paid' ? 'paid' : 'due';
     const matchesStatus =
       statusFilter === 'all'
         ? true
-        : statusFilter === 'overdue'
-        ? isOverdue
-        : f.status === statusFilter;
+        : mappedStatus === statusFilter;
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       f.title.toLowerCase().includes(term) || f.studentName.toLowerCase().includes(term);
@@ -346,15 +411,13 @@ export const FeesView: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) =>
-                setStatusFilter(e.target.value as 'all' | 'pending' | 'partially_paid' | 'paid' | 'overdue')
+                setStatusFilter(e.target.value as 'all' | 'due' | 'paid')
               }
               className="px-2.5 py-1 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-700 focus:outline-none"
             >
               <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="partially_paid">Partially Paid</option>
-              <option value="paid">Paid in Full</option>
-              <option value="overdue">Overdue</option>
+              <option value="due">Due</option>
+              <option value="paid">Paid</option>
             </select>
           )}
         </div>
@@ -395,7 +458,7 @@ export const FeesView: React.FC = () => {
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {filteredFees.map((fee) => {
                     const isOverdue =
-                      fee.status === 'overdue' || (fee.status === 'pending' && fee.dueDate < todayStr);
+                      fee.status === 'due' && fee.dueDate < todayStr;
 
                     return (
                       <tr key={fee.id} className="hover:bg-slate-50/70 transition-colors">
@@ -430,28 +493,32 @@ export const FeesView: React.FC = () => {
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               fee.status === 'paid'
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : isOverdue
-                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                : fee.status === 'partially_paid'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-100 text-slate-600'
+                                : 'bg-rose-50 text-rose-700 border border-rose-200'
                             }`}
                           >
-                            {fee.status === 'paid'
-                              ? 'Paid'
-                              : isOverdue
-                              ? 'Overdue'
-                              : fee.status.replace('_', ' ')}
+                            {fee.status === 'paid' ? 'Paid' : 'Due'}
                           </span>
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            {/* Paid/Due Quick Toggle Buttons */}
+                            <button
+                              onClick={() => handleToggleFeeStatus(fee)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                                fee.status === 'paid'
+                                  ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs'
+                              }`}
+                            >
+                              {fee.status === 'paid' ? 'Mark Due' : 'Mark Paid'}
+                            </button>
+
                             {fee.remainingAmount > 0 && (
                               <button
                                 onClick={() => handleOpenRecordPayment(fee)}
-                                className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition cursor-pointer"
+                                className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs transition cursor-pointer"
                               >
-                                Record Payment
+                                Detail Pay
                               </button>
                             )}
                             <button

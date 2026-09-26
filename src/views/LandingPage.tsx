@@ -24,17 +24,14 @@ import { UserRole } from '../types';
 
 interface LandingPageProps {
   initialJoinCode?: string;
-  onStudentJoinDirect?: (code: string) => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({
-  initialJoinCode = '',
-  onStudentJoinDirect,
-}) => {
+export const LandingPage: React.FC<LandingPageProps> = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authRole, setAuthRole] = useState<UserRole>('teacher');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
-  const [quickJoinCode, setQuickJoinCode] = useState(initialJoinCode);
+
+  const [quickJoinCode, setQuickJoinCode] = useState('');
 
   const openAuth = (role: UserRole, mode: 'login' | 'register') => {
     setAuthRole(role);
@@ -42,14 +39,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     setAuthModalOpen(true);
   };
 
-  const handleQuickJoin = (e: React.FormEvent) => {
+  const handleQuickJoinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickJoinCode.trim()) return;
-    if (onStudentJoinDirect) {
-      onStudentJoinDirect(quickJoinCode.trim().toUpperCase());
-    } else {
-      openAuth('student', 'register');
-    }
+    setAuthRole('student');
+    setAuthMode('register');
+    setAuthModalOpen(true);
   };
 
   return (
@@ -151,16 +146,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </button>
               <button
                 onClick={() => openAuth('student', 'login')}
-                className="px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl border border-slate-200/90 bg-white/95 hover:bg-white text-slate-800 font-extrabold text-xs sm:text-base shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer hover:border-indigo-200 hover:text-indigo-600"
+                className="px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl border border-slate-200/90 bg-white/95 hover:bg-white text-slate-800 font-extrabold text-xs sm:text-base shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer hover:border-indigo-200 hover:text-indigo-600 animate-in fade-in duration-300"
               >
-                Student Sign In
+                Student Portal
               </button>
             </div>
 
             {/* Quick Student Join Box with Luminous Glow */}
             <div className="mt-10 max-w-md mx-auto p-4 sm:p-5 rounded-3xl bg-white/90 shadow-2xl shadow-indigo-500/10 border border-white/80 backdrop-blur-2xl relative">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 -z-10 pointer-events-none" />
-              <form onSubmit={handleQuickJoin} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <form onSubmit={handleQuickJoinSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <input
                   type="text"
                   value={quickJoinCode}
@@ -177,7 +172,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </button>
               </form>
               <p className="mt-2.5 text-[11px] font-medium text-slate-400">
-                Students: Enter the 6-character code provided by your teacher to join instantly.
+                Students: Enter the 6-character code provided by your teacher to pre-select your batch and sign up instantly.
               </p>
             </div>
           </div>
@@ -385,7 +380,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <span className="font-extrabold text-slate-900">TutorFlow</span>
             <span className="text-slate-400">— Multi-Teacher Tuition Management</span>
           </div>
-          <p className="font-medium">© 2026 TutorFlow Platform. All rights reserved.</p>
+          <p className="font-medium">© 2026 TutorFlow Platform. Contact: avharapal@gmail.com</p>
         </div>
       </footer>
 

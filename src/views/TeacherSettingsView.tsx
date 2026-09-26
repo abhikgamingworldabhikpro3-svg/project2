@@ -5,6 +5,7 @@ import {
   KeyRound,
   LogOut,
   Mail,
+  Palette,
   Phone,
   Save,
   School,
@@ -13,6 +14,7 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export const TeacherSettingsView: React.FC<{ onSwitchToStudentMode?: () => void }> = ({
   onSwitchToStudentMode,
@@ -25,6 +27,18 @@ export const TeacherSettingsView: React.FC<{ onSwitchToStudentMode?: () => void 
     resetPassword,
     logout,
   } = useAuth();
+
+  const { isDarkMode, toggleDarkMode, bgTheme, setBgTheme } = useTheme();
+
+  const themeOptions = [
+    { id: 'blueprint', label: 'Blueprint Grid', previewGrad: 'from-blue-500 to-indigo-600', desc: 'Technical Light' },
+    { id: 'studio', label: 'Studio Minimal', previewGrad: 'from-slate-400 to-indigo-500', desc: 'Clean Light' },
+    { id: 'aurora', label: 'Aurora Glow', previewGrad: 'from-purple-500 via-pink-500 to-cyan-400', desc: 'Vibrant Light' },
+    { id: 'academic', label: 'Academic Ivy', previewGrad: 'from-emerald-500 to-teal-600', desc: 'Fresh Ivy Light' },
+    { id: 'sunset', label: 'Sunset Amber', previewGrad: 'from-amber-400 via-orange-500 to-rose-500', desc: 'Warm Light' },
+    { id: 'nebula', label: 'Slate Nebula', previewGrad: 'from-indigo-600 via-purple-600 to-pink-600', desc: 'Stellar Dark' },
+    { id: 'obsidian', label: 'Obsidian Night', previewGrad: 'from-slate-800 to-slate-950', desc: 'Pure Dark' },
+  ];
 
   const [displayName, setDisplayName] = useState(teacherProfile?.displayName || '');
   const [instituteName, setInstituteName] = useState(teacherProfile?.instituteName || '');
@@ -244,6 +258,67 @@ export const TeacherSettingsView: React.FC<{ onSwitchToStudentMode?: () => void 
           </button>
         </div>
       </form>
+
+      {/* Card 2.5: Theme & Dark Mode Settings */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+          <Palette className="w-5 h-5 text-indigo-600" />
+          <h3 className="font-bold text-slate-900 text-sm">Theme & Dark Mode Configuration</h3>
+        </div>
+
+        <div className="space-y-4">
+          {/* Dark Mode Switch */}
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/40">
+            <div>
+              <h4 className="text-xs sm:text-sm font-extrabold text-slate-800">Contrast Dark Mode</h4>
+              <p className="text-[11px] text-slate-500">
+                Switch the physical layout to a high-contrast dark scheme for nocturnal coaching.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                isDarkMode ? 'bg-indigo-600' : 'bg-slate-200'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                  isDarkMode ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Themes Selector */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-2">
+              Select Active Visual Theme
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {themeOptions.map((t) => {
+                const isSelected = bgTheme === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setBgTheme(t.id as any)}
+                    className={`flex flex-col items-start p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? 'border-indigo-600 bg-indigo-50/20 shadow-xs ring-2 ring-indigo-500/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className={`w-6 h-6 rounded-full bg-gradient-to-br ${t.previewGrad} mb-2 shadow-xs`} />
+                    <span className="text-xs font-bold text-slate-900 block">{t.label}</span>
+                    <span className="text-[9px] text-slate-400 mt-0.5 leading-tight">{t.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Card 3: Security & Session */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">

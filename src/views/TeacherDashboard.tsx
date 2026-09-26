@@ -56,6 +56,24 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const [loading, setLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const currentDayName = daysOfWeek[new Date().getDay()];
+  const [selectedTimetableDay, setSelectedTimetableDay] = useState<string>(currentDayName);
+
+  const getDaysForClass = (scheduleStr: string) => {
+    if (!scheduleStr) return [];
+    const days: string[] = [];
+    const s = scheduleStr.toLowerCase();
+    if (s.includes('mon') || s.includes('mnd')) days.push('Monday');
+    if (s.includes('tue') || s.includes('tus')) days.push('Tuesday');
+    if (s.includes('wed') || s.includes('wdn')) days.push('Wednesday');
+    if (s.includes('thu') || s.includes('thr')) days.push('Thursday');
+    if (s.includes('fri')) days.push('Friday');
+    if (s.includes('sat')) days.push('Saturday');
+    if (s.includes('sun')) days.push('Sunday');
+    return days;
+  };
+
   const todayStr = new Date().toISOString().split('T')[0];
   const currency = teacherProfile?.currency || '$';
 
@@ -373,6 +391,120 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
               <span className="text-emerald-600 font-bold">&rarr;</span>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Visual Weekly Class Timetable Slot Component */}
+      <div className="glass-card rounded-3xl p-6 shadow-md border border-white/80 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+              <CalendarCheck className="w-5 h-5 text-indigo-600" />
+              <span>Weekly Academic Timetable</span>
+            </h3>
+            <p className="text-xs text-slate-400">Select any day to view scheduled coaching sessions and batches</p>
+          </div>
+          <span className="text-[11px] font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-wider">
+            Today: {currentDayName}
+          </span>
+        </div>
+
+        {/* Day Tabs */}
+        <div className="mt-4 flex flex-wrap gap-1 bg-slate-100 p-1 rounded-2xl">
+          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Flexible'].map((day) => {
+            const count = classes.filter((c) => {
+              const days = getDaysForClass(c.schedule || '');
+              return day === 'Flexible' ? days.length === 0 : days.includes(day);
+            }).length;
+
+            return (
+              <button
+                key={day}
+                onClick={() => setSelectedTimetableDay(day)}
+                className={`flex-1 sm:flex-none px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 min-w-[80px] ${
+                  selectedTimetableDay === day
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
+                }`}
+              >
+                <span>{day.slice(0, 3)}</span>
+                {count > 0 && (
+                  <span className={`w-4 h-4 rounded-full text-[9px] font-black flex items-center justify-center ${
+                    selectedTimetableDay === day ? 'bg-white text-indigo-700' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Day Classes */}
+        <div className="mt-5">
+          {classes.filter((c) => {
+            const days = getDaysForClass(c.schedule || '');
+            return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+          }).length === 0 ? (
+            <div className="py-8 text-center bg-slate-50/55 border border-dashed border-slate-200/80 rounded-2xl">
+              <p className="text-xs text-slate-400 font-semibold">No lectures or coaching batches scheduled for {selectedTimetableDay}.</p>
+              {selectedTimetableDay !== 'Flexible' && (
+                <p className="text-[10px] text-slate-400 mt-0.5">Enjoy your break or organize preparation sheets!</p>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {classes
+                .filter((c) => {
+                  const days = getDaysForClass(c.schedule || '');
+                  return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+                })
+                .map((c) => {
+                  const enrolledCount = enrollments.filter((e) => e.classId === c.id).length;
+                  const s = c.subject.toLowerCase();
+                  let colorClass = 'border-indigo-100 bg-indigo-50/20 text-indigo-700';
+                  if (s.includes('math')) colorClass = 'border-indigo-100 bg-indigo-50/30 text-indigo-700';
+                  else if (s.includes('physic')) colorClass = 'border-cyan-100 bg-cyan-50/30 text-cyan-700';
+                  else if (s.includes('chem')) colorClass = 'border-emerald-100 bg-emerald-50/30 text-emerald-700';
+                  else if (s.includes('bio')) colorClass = 'border-rose-100 bg-rose-50/30 text-rose-700';
+                  else if (s.includes('eng')) colorClass = 'border-amber-100 bg-amber-50/30 text-amber-700';
+
+                  return (
+                    <div
+                      key={c.id}
+                      className={`p-4 rounded-2xl border-2 ${colorClass} transition-all hover:-translate-y-0.5 hover:shadow-xs flex flex-col justify-between`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-white/80 border border-slate-100">
+                            {c.subject}
+                          </span>
+                          <span className="text-[10px] font-mono font-bold text-slate-500">
+                            Code: {c.joinCode}
+                          </span>
+                        </div>
+                        <h4 className="font-black text-slate-900 text-sm mt-2">{c.name}</h4>
+                        {c.batchName && (
+                          <p className="text-[10px] text-slate-500 font-bold mt-0.5">{c.batchName}</p>
+                        )}
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-[11px] text-slate-600 font-bold">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          <span className="truncate max-w-[150px]">{c.schedule}</span>
+                        </div>
+                        <span className="text-[10px] font-extrabold text-slate-500 bg-white/95 px-2 py-0.5 rounded-md border border-slate-200">
+                          {enrolledCount} Students
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       </div>
 

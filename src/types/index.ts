@@ -6,6 +6,7 @@ export interface UserProfile {
   displayName: string;
   role: UserRole;
   phone?: string;
+  gender?: 'Male' | 'Female' | 'Other';
   photoURL?: string;
   createdAt: string;
   updatedAt?: string;
@@ -173,7 +174,7 @@ export interface FeeRecord {
   amountPaid: number;
   remainingAmount: number;
   dueDate: string;
-  status: 'paid' | 'partially_paid' | 'pending' | 'overdue';
+  status: 'paid' | 'due';
   createdAt: string;
   updatedAt?: string;
 }

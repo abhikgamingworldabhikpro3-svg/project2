@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
+import { db } from '../firebase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -51,10 +52,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
+  const [selectedClassId, setSelectedClassId] = useState('');
+  const [classesList, setClassesList] = useState<{ id: string; name: string; subject: string; teacherId: string; joinCode: string }[]>([]);
   const [instituteName, setInstituteName] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const fetchClasses = async () => {
+      try {
+        const { getDocs, collection, query, where } = await import('firebase/firestore');
+        const q = query(collection(db, 'classes'), where('status', '==', 'active'));
+        const snap = await getDocs(q);
+        const list = snap.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            name: data.name,
+            subject: data.subject,
+            teacherId: data.teacherId,
+            joinCode: data.joinCode || '',
+          };
+        });
+        setClassesList(list);
+        if (list.length > 0) {
+          const preselected = prefilledJoinCode
+            ? list.find((c) => c.joinCode.trim().toLowerCase() === prefilledJoinCode.trim().toLowerCase())
+            : null;
+          if (preselected) {
+            setSelectedClassId(preselected.id);
+          } else {
+            setSelectedClassId(list[0].id);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching classes for student auth signup:', err);
+      }
+    };
+    fetchClasses();
+  }, [isOpen, prefilledJoinCode]);
 
   if (!isOpen) return null;
 
@@ -81,9 +120,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
+    // Unified Registration Flow
     if (mode === 'register') {
       if (!displayName.trim()) {
         setFormError('Full name is required.');
+        return;
+      }
+      if (!email.trim()) {
+        setFormError('Email address is required.');
         return;
       }
       if (password.length < 6) {
@@ -94,6 +138,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setFormError('Passwords do not match.');
         return;
       }
+      if (role === 'student' && !gender) {
+        setFormError('Please select your gender.');
+        return;
+      }
+
       try {
         setIsSubmitting(true);
         await registerWithEmail(
@@ -104,17 +153,63 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           phone.trim(),
           role === 'teacher' ? instituteName.trim() : undefined
         );
+
+        // Additional fields for student
+        if (role === 'student') {
+          const { auth } = await import('../firebase');
+          const currentUid = auth.currentUser?.uid;
+          if (currentUid) {
+            const { doc, setDoc, addDoc, collection } = await import('firebase/firestore');
+            
+            // Update gender in the user doc
+            await setDoc(doc(db, 'users', currentUid), {
+              gender: gender,
+            }, { merge: true });
+
+            // Automatically enroll in selected class if specified
+            if (selectedClassId) {
+              const chosenClass = classesList.find((c) => c.id === selectedClassId);
+              if (chosenClass) {
+                const newEnrollment = {
+                  teacherId: chosenClass.teacherId,
+                  classId: chosenClass.id,
+                  studentId: currentUid,
+                  studentName: displayName.trim(),
+                  studentEmail: email.trim().toLowerCase(),
+                  studentPhone: phone.trim(),
+                  gender: gender,
+                  status: 'active' as const,
+                  joinedAt: new Date().toISOString(),
+                  createdAt: new Date().toISOString(),
+                };
+                await addDoc(collection(db, 'enrollments'), newEnrollment);
+
+                // Create teacher notification
+                await addDoc(collection(db, 'notifications'), {
+                  recipientId: chosenClass.teacherId,
+                  senderId: currentUid,
+                  title: 'New Student Enrolled!',
+                  message: `${displayName.trim()} registered and joined ${chosenClass.name}.`,
+                  type: 'material',
+                  relatedId: chosenClass.id,
+                  read: false,
+                  createdAt: new Date().toISOString(),
+                });
+              }
+            }
+          }
+        }
         onClose();
       } catch (err: unknown) {
         const error = err as Error;
-        setFormError(error.message);
+        setFormError(error.message || 'Registration failed.');
       } finally {
         setIsSubmitting(false);
       }
       return;
     }
 
-    // Login
+    // Unified Login Flow
     if (!email.trim() || !password) {
       setFormError('Please enter both email and password.');
       return;
@@ -126,7 +221,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClose();
     } catch (err: unknown) {
       const error = err as Error;
-      setFormError(error.message);
+      setFormError(error.message || 'Login failed.');
     } finally {
       setIsSubmitting(false);
     }
@@ -289,9 +384,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Registration specific fields */}
             {mode === 'register' && (
               <>
+                {/* Full Name */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Full Name
+                    Full Name *
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -300,12 +396,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       required
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="e.g. Alex Morgan"
+                      placeholder={role === 'teacher' ? 'e.g. Alex Morgan' : 'e.g. Maya Chen'}
                       className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                     />
                   </div>
                 </div>
 
+                {/* Teacher specific: Institute Name */}
                 {role === 'teacher' && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -324,6 +421,51 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                 )}
 
+                {/* Student specific: Gender dropdown */}
+                {role === 'student' && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Gender *
+                    </label>
+                    <select
+                      required
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value as any)}
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                )}
+
+                {/* Student specific: Class selection dropdown */}
+                {role === 'student' && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Initial Class Batch *
+                    </label>
+                    <select
+                      required
+                      value={selectedClassId}
+                      onChange={(e) => setSelectedClassId(e.target.value)}
+                      className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                    >
+                      {classesList.length === 0 ? (
+                        <option value="">No Active Classes Available</option>
+                      ) : (
+                        classesList.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name} — {c.subject}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                )}
+
+                {/* Phone Number */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Phone Number <span className="text-slate-400 font-normal">(Optional)</span>
@@ -345,7 +487,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Email Field */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Email Address
+                Email Address *
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -364,12 +506,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {mode !== 'forgot' && (
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-slate-700">Password</label>
+                  <label className="text-xs font-semibold text-slate-700">Password *</label>
                   {mode === 'login' && (
                     <button
                       type="button"
                       onClick={() => setMode('forgot')}
-                      className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium"
+                      className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
                     >
                       Forgot password?
                     </button>
@@ -388,7 +530,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -396,10 +538,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             )}
 
+            {/* Confirm Password (only on Register) */}
             {mode === 'register' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Confirm Password
+                  Confirm Password *
                 </label>
                 <div className="relative">
                   <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />

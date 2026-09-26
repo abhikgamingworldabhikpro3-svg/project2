@@ -93,7 +93,7 @@ function MainApp() {
           </div>
         )}
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
-          <StudentPortal initialJoinCode={urlJoinCode} />
+          <StudentPortal />
         </main>
         <OfflineIndicator />
       </div>
@@ -115,37 +115,39 @@ function MainApp() {
 
         {/* Dynamic Views */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full overflow-x-hidden pb-24 md:pb-8">
-          {activeTab === 'dashboard' && (
-            <TeacherDashboard
-              setActiveTab={setActiveTab}
-              onOpenCreateClass={() => setActiveTab('classes')}
-              onOpenInviteStudent={() => setActiveTab('students')}
-            />
-          )}
+          <div key={activeTab} className="smooth-tab-entry">
+            {activeTab === 'dashboard' && (
+              <TeacherDashboard
+                setActiveTab={setActiveTab}
+                onOpenCreateClass={() => setActiveTab('classes')}
+                onOpenInviteStudent={() => setActiveTab('students')}
+              />
+            )}
 
-          {activeTab === 'classes' && <ClassesView />}
+            {activeTab === 'classes' && <ClassesView />}
 
-          {activeTab === 'students' && <StudentsView />}
+            {activeTab === 'students' && <StudentsView />}
 
-          {activeTab === 'attendance' && <AttendanceView />}
+            {activeTab === 'attendance' && <AttendanceView />}
 
-          {activeTab === 'assignments' && <AssignmentsView />}
+            {activeTab === 'assignments' && <AssignmentsView />}
 
-          {activeTab === 'materials' && <StudyMaterialsView />}
+            {activeTab === 'materials' && <StudyMaterialsView />}
 
-          {activeTab === 'storage' && <FirebaseStorageView />}
+            {activeTab === 'storage' && <FirebaseStorageView />}
 
-          {activeTab === 'fees' && <FeesView />}
+            {activeTab === 'fees' && <FeesView />}
 
-          {activeTab === 'announcements' && <AnnouncementsView />}
+            {activeTab === 'announcements' && <AnnouncementsView />}
 
-          {activeTab === 'reports' && <ReportsView />}
+            {activeTab === 'reports' && <ReportsView />}
 
-          {activeTab === 'settings' && (
-            <TeacherSettingsView
-              onSwitchToStudentMode={() => setStudentPreviewMode(true)}
-            />
-          )}
+            {activeTab === 'settings' && (
+              <TeacherSettingsView
+                onSwitchToStudentMode={() => setStudentPreviewMode(true)}
+              />
+            )}
+          </div>
         </main>
       </div>
 

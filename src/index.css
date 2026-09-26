@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -9,7 +9,7 @@
   html, body {
     max-width: 100vw;
     overflow-x: hidden;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -17,7 +17,7 @@
   }
 
   *, ::before, ::after {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Tabular numbers for all financial, statistical, and numerical displays */
@@ -191,4 +191,20 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.6);
+}
+
+/* Hardware-accelerated fluid tab transitions */
+.smooth-tab-entry {
+  animation: smoothTabEntry 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes smoothTabEntry {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -586,6 +586,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                   const days = getDaysForClass(c.schedule || '');
                   return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
                 })
+                .sort((a, b) => (a.startTime || '23:59').localeCompare(b.startTime || '23:59'))
                 .map((c) => {
                   const enrolledCount = enrollments.filter((e) => e.classId === c.id).length;
                   const s = c.subject.toLowerCase();

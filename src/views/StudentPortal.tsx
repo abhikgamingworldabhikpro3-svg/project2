@@ -768,6 +768,7 @@ export const StudentPortal: React.FC = () => {
                           const days = getDaysForClass(c.schedule || '');
                           return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
                         })
+                        .sort((a, b) => (a.startTime || '23:59').localeCompare(b.startTime || '23:59'))
                         .map((c) => {
                           const s = c.subject.toLowerCase();
                           let colorClass = 'border-indigo-100 bg-indigo-50/20 text-indigo-700';

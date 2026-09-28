@@ -428,14 +428,14 @@ export const StudentPortal: React.FC = () => {
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-60 h-60 bg-gradient-to-br from-indigo-500/15 via-purple-500/15 to-pink-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-aura" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold mb-1.5 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold uppercase tracking-wider text-[10px] shadow-2xs">
-                {userProfile?.displayName || currentUser?.displayName || 'Student'}
+            <div className="flex items-center gap-2 text-xs font-semibold mb-1.5 flex-wrap text-slate-500">
+              <span className="font-bold text-emerald-700">
+                {userProfile?.displayName || currentUser?.displayName || 'Student Portal'}
               </span>
-              <span className="text-slate-400">·</span>
-              <span className="text-slate-600 font-medium">Student Learning Hub</span>
-              <span className="text-slate-400">·</span>
-              <span className="text-emerald-600 font-bold flex items-center gap-1">
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="text-slate-600">Student Learning Hub</span>
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="text-emerald-600 font-bold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Live Enrolled
               </span>

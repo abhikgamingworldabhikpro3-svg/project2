@@ -274,16 +274,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold mb-1.5 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xs font-extrabold uppercase tracking-wider text-[10px]">
+            <div className="flex items-center gap-2 text-xs font-semibold mb-1.5 flex-wrap text-slate-500">
+              <span className="font-bold text-indigo-700">
                 {teacherProfile?.instituteName || 'Academy Hub'}
               </span>
-              <span className="text-slate-400">·</span>
-              <span className="text-slate-600 font-medium">{teacherProfile?.academicYear || 'Session 2026-2027'}</span>
-              <span className="text-slate-400">·</span>
-              <span className="text-emerald-600 font-bold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                Live Sync Active
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="text-slate-600">{teacherProfile?.academicYear || 'Session 2026-2027'}</span>
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="text-emerald-600 font-bold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                Live Cloud Sync
               </span>
             </div>
 

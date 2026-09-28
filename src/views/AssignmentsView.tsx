@@ -26,7 +26,7 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType, uploadAndRegisterStorageFile } from '../firebase';
+import { db, deleteStorageFile, handleFirestoreError, OperationType, uploadAndRegisterStorageFile } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { Assignment, ClassItem, Submission } from '../types';
 import { EmptyState } from '../components/EmptyState';
@@ -171,8 +171,16 @@ export const AssignmentsView: React.FC = () => {
   };
 
   const handleDeleteAssignment = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this assignment?')) return;
+    const assignToDelete = assignments.find((a) => a.id === id);
+    if (!window.confirm(`Are you sure you want to delete "${assignToDelete?.title || 'this assignment'}"?`)) return;
     try {
+      if (assignToDelete?.attachments) {
+        for (const att of assignToDelete.attachments) {
+          if ('storagePath' in att && typeof att.storagePath === 'string') {
+            await deleteStorageFile(att.storagePath);
+          }
+        }
+      }
       await deleteDoc(doc(db, 'assignments', id));
       if (selectedAssignmentForGrading?.id === id) {
         setSelectedAssignmentForGrading(null);

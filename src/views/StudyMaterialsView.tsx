@@ -256,8 +256,12 @@ export const StudyMaterialsView: React.FC = () => {
   };
 
   const handleDeleteMaterial = async (id: string) => {
-    if (!window.confirm('Delete this study material?')) return;
+    const mat = materials.find((m) => m.id === id);
+    if (!window.confirm(`Delete "${mat?.title || 'this study material'}"?`)) return;
     try {
+      if (mat?.storagePath) {
+        await deleteStorageFile(mat.storagePath);
+      }
       await deleteDoc(doc(db, 'materials', id));
       if (viewingMaterial?.id === id) setViewingMaterial(null);
     } catch (err: unknown) {

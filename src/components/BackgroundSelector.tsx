@@ -9,6 +9,18 @@ export const BackgroundSelector: React.FC<{ compact?: boolean }> = ({ compact = 
 
   const themes: { id: BackgroundTheme; label: string; previewGrad: string; desc: string }[] = [
     {
+      id: 'oxford',
+      label: 'Oxford Academic Luxury',
+      previewGrad: 'from-slate-900 via-indigo-950 to-blue-900',
+      desc: 'Deep royal navy & champagne gold accents',
+    },
+    {
+      id: 'executive',
+      label: 'Executive Obsidian Gold',
+      previewGrad: 'from-amber-600 via-slate-900 to-black',
+      desc: 'Sophisticated charcoal & brass professional',
+    },
+    {
       id: 'blueprint',
       label: 'Blueprint Grid',
       previewGrad: 'from-blue-500 to-indigo-600',

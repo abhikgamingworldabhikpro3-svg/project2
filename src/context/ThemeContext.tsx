@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type BackgroundTheme = 'studio' | 'blueprint' | 'aurora' | 'academic' | 'sunset' | 'nebula' | 'obsidian';
+export type BackgroundTheme = 'studio' | 'blueprint' | 'aurora' | 'academic' | 'sunset' | 'nebula' | 'obsidian' | 'oxford' | 'executive';
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -13,9 +13,9 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   isDarkMode: false,
   toggleDarkMode: () => {},
-  bgTheme: 'blueprint',
+  bgTheme: 'oxford',
   setBgTheme: () => {},
-  themeClass: 'bg-theme-blueprint',
+  themeClass: 'bg-theme-oxford',
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -25,7 +25,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (saved !== null) {
         return saved === 'true';
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return false;
     }
     return false;
   });
@@ -33,11 +33,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [bgTheme, setBgThemeState] = useState<BackgroundTheme>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('tutorflow_bg_theme') as BackgroundTheme;
-      if (['studio', 'blueprint', 'aurora', 'academic', 'sunset', 'nebula', 'obsidian'].includes(saved)) {
+      if (['studio', 'blueprint', 'aurora', 'academic', 'sunset', 'nebula', 'obsidian', 'oxford', 'executive'].includes(saved)) {
         return saved;
       }
     }
-    return 'blueprint';
+    return 'oxford';
   });
 
   // Keep theme class and dark mode class in sync on the root body

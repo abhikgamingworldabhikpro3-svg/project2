@@ -176,8 +176,9 @@ export const AssignmentsView: React.FC = () => {
     try {
       if (assignToDelete?.attachments) {
         for (const att of assignToDelete.attachments) {
-          if ('storagePath' in att && typeof att.storagePath === 'string') {
-            await deleteStorageFile(att.storagePath);
+          const pathOrUrl = ('storagePath' in att && att.storagePath) || ('url' in att && att.url);
+          if (pathOrUrl && typeof pathOrUrl === 'string') {
+            await deleteStorageFile(pathOrUrl);
           }
         }
       }

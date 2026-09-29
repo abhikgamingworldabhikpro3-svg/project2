@@ -139,7 +139,8 @@ export const FirebaseStorageView: React.FC = () => {
 
     try {
       setDeletingId(file.id);
-      await deleteStorageFile(file.storagePath, file.id);
+      await deleteStorageFile(file.storagePath || file.downloadURL, file.id);
+      setFiles((prev) => prev.filter((f) => f.id !== file.id));
     } catch (err) {
       console.error('Failed to delete file:', err);
       setUploadError('Failed to delete file from storage. Please check permissions.');

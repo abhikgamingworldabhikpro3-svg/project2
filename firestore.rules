@@ -15,124 +15,95 @@ service cloud.firestore {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    function isTeacherOwner(teacherId) {
-      return isSignedIn() && request.auth.uid == teacherId;
-    }
-
     // User profiles
     match /users/{userId} {
       allow get: if isSignedIn() && isValidId(userId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && request.auth.uid == userId;
-      allow delete: if isSignedIn() && request.auth.uid == userId;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Teacher institutes & profiles
     match /teachers/{teacherId} {
       allow get: if isSignedIn() && isValidId(teacherId);
       allow list: if isSignedIn();
-      allow create, update, delete: if isSignedIn() && request.auth.uid == teacherId;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Classes
     match /classes/{classId} {
       allow get: if isSignedIn() && isValidId(classId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Enrollments
     match /enrollments/{enrollmentId} {
       allow get: if isSignedIn() && isValidId(enrollmentId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && (
-        request.resource.data.teacherId == request.auth.uid || request.resource.data.studentId == request.auth.uid
-      );
-      allow update, delete: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow create, update, delete: if isSignedIn();
     }
 
     // Attendance
     match /attendance/{attendanceId} {
       allow get: if isSignedIn() && isValidId(attendanceId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Assignments
     match /assignments/{assignmentId} {
       allow get: if isSignedIn() && isValidId(assignmentId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Submissions
     match /submissions/{submissionId} {
       allow get: if isSignedIn() && isValidId(submissionId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
-      allow update: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
-      allow delete: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid
-      );
+      allow create, update, delete: if isSignedIn();
     }
 
     // Study Materials
     match /materials/{materialId} {
       allow get: if isSignedIn() && isValidId(materialId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Storage Files Metadata Collection (Firebase Storage)
     match /storage_files/{fileId} {
       allow get: if isSignedIn() && isValidId(fileId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && (
-        request.resource.data.teacherId == request.auth.uid || request.resource.data.uploaderId == request.auth.uid
-      );
-      allow update, delete: if isSignedIn() && (
-        resource.data.teacherId == request.auth.uid || resource.data.uploaderId == request.auth.uid
-      );
+      allow create, update, delete: if isSignedIn();
     }
 
     // Fees
     match /fees/{feeId} {
       allow get: if isSignedIn() && isValidId(feeId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Payments
     match /payments/{paymentId} {
       allow get: if isSignedIn() && isValidId(paymentId);
       allow list: if isSignedIn();
-      allow create, update, delete: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Announcements
     match /announcements/{announcementId} {
       allow get: if isSignedIn() && isValidId(announcementId);
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.teacherId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+      allow create, update, delete: if isSignedIn();
     }
 
     // Notifications
     match /notifications/{notificationId} {
-      allow get: if isSignedIn() && isValidId(notificationId) && resource.data.recipientId == request.auth.uid;
-      allow list: if isSignedIn() && resource.data.recipientId == request.auth.uid;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      allow get: if isSignedIn() && isValidId(notificationId);
+      allow list: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
     }
 
     // Connection test document
@@ -141,3 +112,4 @@ service cloud.firestore {
     }
   }
 }
+

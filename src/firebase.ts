@@ -15,6 +15,9 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  getDocs,
+  query,
+  where,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -46,6 +49,31 @@ export function fileToDataURL(file: File | Blob): Promise<string> {
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Extracts a clean relative storage path from a raw path string, gs:// URI, or download URL.
+ */
+export function getCleanStoragePath(input?: string): string | null {
+  if (!input || input.startsWith('data:')) return null;
+
+  if (input.includes('/o/')) {
+    try {
+      const parts = input.split('/o/')[1];
+      const pathEncoded = parts.split('?')[0];
+      return decodeURIComponent(pathEncoded);
+    } catch {
+      // fallback
+    }
+  }
+
+  if (input.startsWith('gs://')) {
+    const parts = input.replace('gs://', '').split('/');
+    parts.shift(); // remove bucket name
+    return parts.join('/');
+  }
+
+  return input.startsWith('/') ? input.substring(1) : input;
 }
 
 /**
@@ -114,25 +142,64 @@ export async function uploadAndRegisterStorageFile(
 }
 
 /**
- * Deletes a file from Firebase Storage and its Firestore record.
+ * Deletes a file from Firebase Storage bucket AND removes all matching metadata records in Firestore ('storage_files').
  */
-export async function deleteStorageFile(storagePath: string, docId?: string) {
-  if (storagePath && !storagePath.startsWith('data:')) {
+export async function deleteStorageFile(storagePathOrUrl?: string, docId?: string): Promise<boolean> {
+  let objectDeleted = false;
+  const cleanPath = getCleanStoragePath(storagePathOrUrl);
+
+  // 1. Delete from Firebase Storage Bucket if cleanPath exists
+  if (cleanPath) {
     try {
-      const storageRef = ref(storage, storagePath);
+      const storageRef = ref(storage, cleanPath);
       await deleteObject(storageRef);
-    } catch (err) {
-      console.warn('Storage bucket object deletion note:', err);
+      objectDeleted = true;
+      console.log(`Firebase Storage: Deleted object at "${cleanPath}"`);
+    } catch (err: unknown) {
+      console.warn(`Firebase Storage: Note on object deletion for "${cleanPath}":`, err);
     }
   }
+
+  // 2. Delete specific document in 'storage_files' collection if docId is provided
   if (docId) {
     try {
       await deleteDoc(doc(db, 'storage_files', docId));
+      console.log(`Firestore: Deleted storage_files doc with id "${docId}"`);
     } catch (err) {
-      console.warn('Firestore storage_files doc deletion error:', err);
+      console.error(`Firestore: Error deleting storage_files doc "${docId}":`, err);
     }
   }
+
+  // 3. Always search 'storage_files' collection for any records matching cleanPath or storagePathOrUrl, and delete them!
+  if (cleanPath || storagePathOrUrl) {
+    try {
+      const storageFilesRef = collection(db, 'storage_files');
+      const queriesToRun = [];
+      if (cleanPath) {
+        queriesToRun.push(query(storageFilesRef, where('storagePath', '==', cleanPath)));
+      }
+      if (storagePathOrUrl && storagePathOrUrl !== cleanPath) {
+        queriesToRun.push(query(storageFilesRef, where('storagePath', '==', storagePathOrUrl)));
+        queriesToRun.push(query(storageFilesRef, where('downloadURL', '==', storagePathOrUrl)));
+      }
+
+      for (const q of queriesToRun) {
+        const snap = await getDocs(q);
+        for (const d of snap.docs) {
+          if (d.id !== docId) {
+            await deleteDoc(doc(db, 'storage_files', d.id));
+            console.log(`Firestore: Purged matching storage_files doc "${d.id}"`);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Firestore: Error during storage_files cleanup query:', err);
+    }
+  }
+
+  return objectDeleted;
 }
+
 
 export {
   signInWithPopup,

@@ -36,6 +36,28 @@ export const ClassesView: React.FC = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // View Mode: Batches Card Grid vs Weekly Timetable Matrix
+  const [viewMode, setViewMode] = useState<'batches' | 'timetable'>('batches');
+
+  // Days Helper & Timetable Day
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Flexible'];
+  const currentDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()];
+  const [selectedTimetableDay, setSelectedTimetableDay] = useState<string>(currentDayName);
+
+  const getDaysForClass = (scheduleStr: string) => {
+    if (!scheduleStr) return [];
+    const days: string[] = [];
+    const s = scheduleStr.toLowerCase();
+    if (s.includes('mon') || s.includes('mnd')) days.push('Monday');
+    if (s.includes('tue') || s.includes('tus')) days.push('Tuesday');
+    if (s.includes('wed') || s.includes('wdn')) days.push('Wednesday');
+    if (s.includes('thu') || s.includes('thr')) days.push('Thursday');
+    if (s.includes('fri')) days.push('Friday');
+    if (s.includes('sat')) days.push('Saturday');
+    if (s.includes('sun')) days.push('Sunday');
+    return days;
+  };
+
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'archived'>('active');
@@ -239,28 +261,56 @@ export const ClassesView: React.FC = () => {
         </button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 glass-card p-3 rounded-2xl shadow-xs">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by class, subject, or code..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
-          />
+      {/* Search, View Mode, and Filters */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 glass-card p-3 rounded-3xl shadow-xs border border-white/80 dark:border-slate-800">
+        <div className="flex items-center gap-2 flex-1">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by class, subject, or join code..."
+              className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-2xl border border-slate-200/80 bg-white/70 dark:bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+            />
+          </div>
+
+          {/* View Mode Toggle: Batches vs Weekly Schedule */}
+          <div className="flex items-center p-1 bg-slate-100/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shrink-0">
+            <button
+              onClick={() => setViewMode('batches')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'batches'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Batches</span>
+            </button>
+            <button
+              onClick={() => setViewMode('timetable')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'timetable'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Timetable</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
+        <div className="flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 self-start md:self-auto">
           {(['active', 'archived', 'all'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`flex-1 sm:flex-none px-3 py-1 text-xs font-semibold rounded-lg capitalize transition-all cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl capitalize transition-all cursor-pointer ${
                 statusFilter === s
-                  ? 'bg-white text-indigo-700 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
               {s}
@@ -269,23 +319,139 @@ export const ClassesView: React.FC = () => {
         </div>
       </div>
 
-      {/* Grid of Classes */}
-      {loading ? (
-        <div className="py-12 text-center text-xs text-slate-400">Loading your classes...</div>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={BookOpen}
-          title={searchTerm ? 'No matching classes found' : 'No classes created yet'}
-          description={
-            searchTerm
-              ? 'Try adjusting your search keywords or status filter.'
-              : 'Create your first course or tuition batch to start enrolling students.'
-          }
-          actionLabel={!searchTerm ? 'Create First Class' : undefined}
-          onAction={!searchTerm ? handleOpenCreate : undefined}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Timetable View Mode: Organized Chronologically by Day & Time */}
+      {viewMode === 'timetable' && (
+        <div className="glass-card rounded-3xl p-5 shadow-xs border border-white/80 dark:border-slate-800 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                <Clock className="w-4 h-4 text-indigo-600" />
+                <span>Weekly Lecture Schedule (Time, Date & Day)</span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Classes arranged chronologically by start time for every teaching day.
+              </p>
+            </div>
+            <span className="text-[11px] font-black text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-3 py-1 rounded-xl border border-indigo-200/60 dark:border-indigo-800 self-start sm:self-auto uppercase tracking-wider">
+              Today: {currentDayName}
+            </span>
+          </div>
+
+          {/* Day Selector Pills */}
+          <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+            {daysOfWeek.map((day) => {
+              const dayClasses = filtered.filter((c) => {
+                const days = getDaysForClass(c.schedule || '');
+                return day === 'Flexible' ? days.length === 0 : days.includes(day);
+              });
+              const count = dayClasses.length;
+
+              return (
+                <button
+                  key={day}
+                  onClick={() => setSelectedTimetableDay(day)}
+                  className={`flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 min-w-[80px] ${
+                    selectedTimetableDay === day
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <span>{day.slice(0, 3)}</span>
+                  {count > 0 && (
+                    <span
+                      className={`w-4 h-4 rounded-full text-[9px] font-extrabold flex items-center justify-center ${
+                        selectedTimetableDay === day
+                          ? 'bg-white text-indigo-700'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Classes Scheduled on Selected Day */}
+          <div className="pt-2">
+            {filtered
+              .filter((c) => {
+                const days = getDaysForClass(c.schedule || '');
+                return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+              }).length === 0 ? (
+              <div className="py-10 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  No classes scheduled for {selectedTimetableDay}.
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Click "New Class" above to schedule a batch on {selectedTimetableDay}.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filtered
+                  .filter((c) => {
+                    const days = getDaysForClass(c.schedule || '');
+                    return selectedTimetableDay === 'Flexible' ? days.length === 0 : days.includes(selectedTimetableDay);
+                  })
+                  .sort((a, b) => (a.startTime || '23:59').localeCompare(b.startTime || '23:59'))
+                  .map((c) => {
+                    const classEnrollments = enrollments.filter((e) => e.classId === c.id);
+                    return (
+                      <div
+                        key={c.id}
+                        className="p-4 rounded-2xl glass-card hover:border-indigo-300 dark:hover:border-indigo-700 transition-all hover:-translate-y-1 shadow-xs flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800">
+                              {c.subject}
+                            </span>
+                            {c.batchName && (
+                              <span className="text-[11px] text-slate-500 font-semibold">{c.batchName}</span>
+                            )}
+                          </div>
+                          <h4 className="font-extrabold text-slate-900 dark:text-white text-sm mt-2">{c.name}</h4>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 font-bold">
+                            <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                            <span>{c.startTime || 'Flexible'} {c.endTime ? `- ${c.endTime}` : ''}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
+                            <Users className="w-3 h-3" />
+                            <span>{classEnrollments.length}/{c.maxStudents || 35}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Grid of Classes (Batches Mode) */}
+      {viewMode === 'batches' && (
+        loading ? (
+          <div className="py-12 text-center text-xs text-slate-400">Loading your classes...</div>
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            icon={BookOpen}
+            title={searchTerm ? 'No matching classes found' : 'No classes created yet'}
+            description={
+              searchTerm
+                ? 'Try adjusting your search keywords or status filter.'
+                : 'Create your first course or tuition batch to start enrolling students.'
+            }
+            actionLabel={!searchTerm ? 'Create First Class' : undefined}
+            onAction={!searchTerm ? handleOpenCreate : undefined}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((c) => {
             const classEnrollments = enrollments.filter((e) => e.classId === c.id);
             const isFull = classEnrollments.length >= (c.maxStudents || 35);
@@ -419,6 +585,7 @@ export const ClassesView: React.FC = () => {
             );
           })}
         </div>
+        )
       )}
 
       {/* Create / Edit Class Modal */}
@@ -492,16 +659,41 @@ export const ClassesView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Schedule (Days & Times)
                 </label>
                 <input
                   type="text"
                   value={schedule}
                   onChange={(e) => setSchedule(e.target.value)}
-                  placeholder="e.g. Tue, Thu, Sat (5:00 PM - 6:30 PM)"
-                  className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  placeholder="e.g. Mon, Wed, Fri (4:00 PM - 5:30 PM)"
+                  className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Start Time
+                  </label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  />
+                </div>
               </div>
 
               <div>

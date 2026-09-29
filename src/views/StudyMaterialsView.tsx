@@ -243,7 +243,7 @@ export const StudyMaterialsView: React.FC = () => {
   const handleDeleteStorageItem = async (fileItem: StorageFile) => {
     if (!window.confirm(`Delete "${fileItem.name}" from Firebase Storage?`)) return;
     try {
-      await deleteStorageFile(fileItem.storagePath, fileItem.id);
+      await deleteStorageFile(fileItem.storagePath || fileItem.downloadURL, fileItem.id);
     } catch (err) {
       console.error('Failed to delete storage file:', err);
     }
@@ -259,8 +259,8 @@ export const StudyMaterialsView: React.FC = () => {
     const mat = materials.find((m) => m.id === id);
     if (!window.confirm(`Delete "${mat?.title || 'this study material'}"?`)) return;
     try {
-      if (mat?.storagePath) {
-        await deleteStorageFile(mat.storagePath);
+      if (mat?.storagePath || mat?.fileUrl) {
+        await deleteStorageFile(mat.storagePath || mat.fileUrl);
       }
       await deleteDoc(doc(db, 'materials', id));
       if (viewingMaterial?.id === id) setViewingMaterial(null);
@@ -268,6 +268,7 @@ export const StudyMaterialsView: React.FC = () => {
       handleFirestoreError(err, OperationType.DELETE, `materials/${id}`);
     }
   };
+
 
   // AI Diagram Generation Handler (gemini-3-pro-image-preview)
   const handleGenerateDiagram = async () => {
